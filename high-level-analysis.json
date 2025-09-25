@@ -1,0 +1,1110 @@
+{
+  "slices": [
+    {
+      "id": "owner-search-form-display",
+      "status": "Created",
+      "index": 1,
+      "title": "Display Owner Search Form",
+      "context": "Present search form for finding existing pet owners",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "owner-search-form",
+          "title": "Owner Search Form",
+          "type": "READMODEL",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "owner-search-screen",
+              "type": "OUTBOUND",
+              "title": "Owner Search Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "screens": [
+        {
+          "id": "owner-search-screen",
+          "title": "Owner Search Screen",
+          "type": "SCREEN",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "owner-search-form",
+              "type": "INBOUND",
+              "title": "Owner Search Form",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "search-owners-command",
+              "type": "OUTBOUND",
+              "title": "Search Owners",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-search-execution",
+      "status": "Created",
+      "index": 2,
+      "title": "Search for Owners",
+      "context": "Execute owner search by last name and handle different result scenarios",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "search-owners-command",
+          "title": "Search Owners",
+          "type": "COMMAND",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "owner-search-screen",
+              "type": "INBOUND",
+              "title": "Owner Search Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "owners-found-event",
+              "type": "OUTBOUND",
+              "title": "Owners Found",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "no-owners-found-event",
+              "type": "OUTBOUND",
+              "title": "No Owners Found",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "events": [
+        {
+          "id": "owners-found-event",
+          "title": "Owners Found",
+          "type": "EVENT",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "search-owners-command",
+              "type": "INBOUND",
+              "title": "Search Owners",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner"
+        },
+        {
+          "id": "no-owners-found-event",
+          "title": "No Owners Found",
+          "type": "EVENT",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "search-owners-command",
+              "type": "INBOUND",
+              "title": "Search Owners",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-search-results-display",
+      "status": "Created",
+      "index": 3,
+      "title": "Display Owner Search Results",
+      "context": "Show search results - single owner redirect, multiple owners list, or no results error",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "owner-search-results",
+          "title": "Owner Search Results",
+          "type": "READMODEL",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "owners-found-event",
+              "type": "INBOUND",
+              "title": "Owners Found",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "no-owners-found-event",
+              "type": "INBOUND",
+              "title": "No Owners Found",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "owner-list-screen",
+              "type": "OUTBOUND",
+              "title": "Owner List Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "screens": [
+        {
+          "id": "owner-list-screen",
+          "title": "Owner List Screen",
+          "type": "SCREEN",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "owner-search-results",
+              "type": "INBOUND",
+              "title": "Owner Search Results",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "select-owner-command",
+              "type": "OUTBOUND",
+              "title": "Select Owner",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-registration-form-display",
+      "status": "Created",
+      "index": 4,
+      "title": "Display Owner Registration Form",
+      "context": "Present form for registering a new pet owner",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "owner-registration-form",
+          "title": "Owner Registration Form",
+          "type": "READMODEL",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "owner-registration-screen",
+              "type": "OUTBOUND",
+              "title": "Owner Registration Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "screens": [
+        {
+          "id": "owner-registration-screen",
+          "title": "Owner Registration Screen",
+          "type": "SCREEN",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "owner-registration-form",
+              "type": "INBOUND",
+              "title": "Owner Registration Form",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "register-owner-command",
+              "type": "OUTBOUND",
+              "title": "Register Owner",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-registration-submission",
+      "status": "Created",
+      "index": 5,
+      "title": "Register New Owner",
+      "context": "Process owner registration with validation and persistence",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "register-owner-command",
+          "title": "Register Owner",
+          "type": "COMMAND",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "owner-registration-screen",
+              "type": "INBOUND",
+              "title": "Owner Registration Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "owner-registered-event",
+              "type": "OUTBOUND",
+              "title": "Owner Registered",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "events": [
+        {
+          "id": "owner-registered-event",
+          "title": "Owner Registered",
+          "type": "EVENT",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "register-owner-command",
+              "type": "INBOUND",
+              "title": "Register Owner",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-profile-display",
+      "status": "Created",
+      "index": 6,
+      "title": "Display Owner Profile",
+      "context": "Show owner details with their pets and visit history",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "owner-profile-data",
+          "title": "Owner Profile Data",
+          "type": "READMODEL",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "owner-registered-event",
+              "type": "INBOUND",
+              "title": "Owner Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "pet-registered-event",
+              "type": "INBOUND",
+              "title": "Pet Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "visit-scheduled-event",
+              "type": "INBOUND",
+              "title": "Visit Scheduled",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "owner-profile-screen",
+              "type": "OUTBOUND",
+              "title": "Owner Profile Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "screens": [
+        {
+          "id": "owner-profile-screen",
+          "title": "Owner Profile Screen",
+          "type": "SCREEN",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "owner-profile-data",
+              "type": "INBOUND",
+              "title": "Owner Profile Data",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "edit-owner-command",
+              "type": "OUTBOUND",
+              "title": "Edit Owner",
+              "elementType": "COMMAND"
+            },
+            {
+              "id": "add-pet-command",
+              "type": "OUTBOUND",
+              "title": "Add Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-update-form-display",
+      "status": "Created",
+      "index": 7,
+      "title": "Display Owner Update Form",
+      "context": "Present form for editing existing owner information",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "owner-update-form",
+          "title": "Owner Update Form",
+          "type": "READMODEL",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "owner-registered-event",
+              "type": "INBOUND",
+              "title": "Owner Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "owner-update-screen",
+              "type": "OUTBOUND",
+              "title": "Owner Update Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "screens": [
+        {
+          "id": "owner-update-screen",
+          "title": "Owner Update Screen",
+          "type": "SCREEN",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "owner-update-form",
+              "type": "INBOUND",
+              "title": "Owner Update Form",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "update-owner-command",
+              "type": "OUTBOUND",
+              "title": "Update Owner",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-update-submission",
+      "status": "Created",
+      "index": 8,
+      "title": "Update Owner Information",
+      "context": "Process owner information updates with validation",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "update-owner-command",
+          "title": "Update Owner",
+          "type": "COMMAND",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "owner-update-screen",
+              "type": "INBOUND",
+              "title": "Owner Update Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "owner-updated-event",
+              "type": "OUTBOUND",
+              "title": "Owner Updated",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "events": [
+        {
+          "id": "owner-updated-event",
+          "title": "Owner Updated",
+          "type": "EVENT",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "update-owner-command",
+              "type": "INBOUND",
+              "title": "Update Owner",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "pet-registration-form-display",
+      "status": "Created",
+      "index": 9,
+      "title": "Display Pet Registration Form",
+      "context": "Present form for registering a new pet to an existing owner",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "pet-registration-form-data",
+          "title": "Pet Registration Form Data",
+          "type": "READMODEL",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "owner-registered-event",
+              "type": "INBOUND",
+              "title": "Owner Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "pet-types-loaded-event",
+              "type": "INBOUND",
+              "title": "Pet Types Loaded",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "pet-registration-screen",
+              "type": "OUTBOUND",
+              "title": "Pet Registration Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "screens": [
+        {
+          "id": "pet-registration-screen",
+          "title": "Pet Registration Screen",
+          "type": "SCREEN",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "pet-registration-form-data",
+              "type": "INBOUND",
+              "title": "Pet Registration Form Data",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "register-pet-command",
+              "type": "OUTBOUND",
+              "title": "Register Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet"]
+    },
+    {
+      "id": "pet-registration-submission",
+      "status": "Created",
+      "index": 10,
+      "title": "Register New Pet",
+      "context": "Process pet registration with validation and persistence",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "register-pet-command",
+          "title": "Register Pet",
+          "type": "COMMAND",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "pet-registration-screen",
+              "type": "INBOUND",
+              "title": "Pet Registration Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "pet-registered-event",
+              "type": "OUTBOUND",
+              "title": "Pet Registered",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "events": [
+        {
+          "id": "pet-registered-event",
+          "title": "Pet Registered",
+          "type": "EVENT",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "register-pet-command",
+              "type": "INBOUND",
+              "title": "Register Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet"]
+    },
+    {
+      "id": "pet-update-form-display",
+      "status": "Created",
+      "index": 11,
+      "title": "Display Pet Update Form",
+      "context": "Present form for editing existing pet information",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "pet-update-form",
+          "title": "Pet Update Form",
+          "type": "READMODEL",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "pet-registered-event",
+              "type": "INBOUND",
+              "title": "Pet Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "pet-types-loaded-event",
+              "type": "INBOUND",
+              "title": "Pet Types Loaded",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "pet-update-screen",
+              "type": "OUTBOUND",
+              "title": "Pet Update Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "screens": [
+        {
+          "id": "pet-update-screen",
+          "title": "Pet Update Screen",
+          "type": "SCREEN",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "pet-update-form",
+              "type": "INBOUND",
+              "title": "Pet Update Form",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "update-pet-command",
+              "type": "OUTBOUND",
+              "title": "Update Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet"]
+    },
+    {
+      "id": "pet-update-submission",
+      "status": "Created",
+      "index": 12,
+      "title": "Update Pet Information",
+      "context": "Process pet information updates with validation",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "update-pet-command",
+          "title": "Update Pet",
+          "type": "COMMAND",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "pet-update-screen",
+              "type": "INBOUND",
+              "title": "Pet Update Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "pet-updated-event",
+              "type": "OUTBOUND",
+              "title": "Pet Updated",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "events": [
+        {
+          "id": "pet-updated-event",
+          "title": "Pet Updated",
+          "type": "EVENT",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "update-pet-command",
+              "type": "INBOUND",
+              "title": "Update Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet"]
+    },
+    {
+      "id": "visit-booking-form-display",
+      "status": "Created",
+      "index": 13,
+      "title": "Display Visit Booking Form",
+      "context": "Present form for scheduling a veterinary visit for a pet",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "visit-booking-form",
+          "title": "Visit Booking Form",
+          "type": "READMODEL",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "pet-registered-event",
+              "type": "INBOUND",
+              "title": "Pet Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "visit-booking-screen",
+              "type": "OUTBOUND",
+              "title": "Visit Booking Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Visit"
+        }
+      ],
+      "screens": [
+        {
+          "id": "visit-booking-screen",
+          "title": "Visit Booking Screen",
+          "type": "SCREEN",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "visit-booking-form",
+              "type": "INBOUND",
+              "title": "Visit Booking Form",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "schedule-visit-command",
+              "type": "OUTBOUND",
+              "title": "Schedule Visit",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Visit"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Visit"]
+    },
+    {
+      "id": "visit-booking-submission",
+      "status": "Created",
+      "index": 14,
+      "title": "Schedule Pet Visit",
+      "context": "Process visit booking with validation and persistence",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "schedule-visit-command",
+          "title": "Schedule Visit",
+          "type": "COMMAND",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "visit-booking-screen",
+              "type": "INBOUND",
+              "title": "Visit Booking Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "visit-scheduled-event",
+              "type": "OUTBOUND",
+              "title": "Visit Scheduled",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Visit"
+        }
+      ],
+      "events": [
+        {
+          "id": "visit-scheduled-event",
+          "title": "Visit Scheduled",
+          "type": "EVENT",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "schedule-visit-command",
+              "type": "INBOUND",
+              "title": "Schedule Visit",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Visit"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Visit"]
+    },
+    {
+      "id": "veterinarian-directory-display",
+      "status": "Created",
+      "index": 15,
+      "title": "Display Veterinarian Directory",
+      "context": "Show available veterinarians with their specialties",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "veterinarian-directory",
+          "title": "Veterinarian Directory",
+          "type": "READMODEL",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "veterinarians-loaded-event",
+              "type": "INBOUND",
+              "title": "Veterinarians Loaded",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "veterinarian-directory-screen",
+              "type": "OUTBOUND",
+              "title": "Veterinarian Directory Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Veterinarian"
+        }
+      ],
+      "screens": [
+        {
+          "id": "veterinarian-directory-screen",
+          "title": "Veterinarian Directory Screen",
+          "type": "SCREEN",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "veterinarian-directory",
+              "type": "INBOUND",
+              "title": "Veterinarian Directory",
+              "elementType": "READMODEL"
+            }
+          ],
+          "aggregate": "Veterinarian"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Veterinarian"]
+    },
+    {
+      "id": "system-data-loading",
+      "status": "Created",
+      "index": 16,
+      "title": "Load System Reference Data",
+      "context": "Background loading of pet types and veterinarian information",
+      "sliceType": "AUTOMATION",
+      "commands": [
+        {
+          "id": "load-reference-data-command",
+          "title": "Load Reference Data",
+          "type": "COMMAND",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "system-startup-processor",
+              "type": "INBOUND",
+              "title": "System Startup Processor",
+              "elementType": "AUTOMATION"
+            },
+            {
+              "id": "pet-types-loaded-event",
+              "type": "OUTBOUND",
+              "title": "Pet Types Loaded",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "veterinarians-loaded-event",
+              "type": "OUTBOUND",
+              "title": "Veterinarians Loaded",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "System"
+        }
+      ],
+      "events": [
+        {
+          "id": "pet-types-loaded-event",
+          "title": "Pet Types Loaded",
+          "type": "EVENT",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "load-reference-data-command",
+              "type": "INBOUND",
+              "title": "Load Reference Data",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "System"
+        },
+        {
+          "id": "veterinarians-loaded-event",
+          "title": "Veterinarians Loaded",
+          "type": "EVENT",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "load-reference-data-command",
+              "type": "INBOUND",
+              "title": "Load Reference Data",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "System"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [
+        {
+          "id": "system-startup-processor",
+          "title": "System Startup Processor",
+          "type": "AUTOMATION",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "load-reference-data-command",
+              "type": "OUTBOUND",
+              "title": "Load Reference Data",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "System"
+        }
+      ],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "System",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["System"]
+    }
+  ]
+}

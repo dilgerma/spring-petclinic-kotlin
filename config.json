@@ -1,0 +1,518 @@
+{
+  "slices": [
+    {
+      "id": "pet-registration-form-display",
+      "status": "Created",
+      "index": 1,
+      "title": "Display Pet Registration Form",
+      "context": "Present form for registering a new pet to an existing owner with available pet types",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "pet-registration-form-data",
+          "title": "Pet Registration Form Data",
+          "type": "READMODEL",
+          "fields": [
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": 1,
+              "idAttribute": true,
+              "optional": false
+            },
+            {
+              "name": "ownerName",
+              "type": "String",
+              "example": "George Franklin",
+              "optional": false
+            },
+            {
+              "name": "availablePetTypes",
+              "type": "Custom",
+              "example": [
+                {
+                  "id": 1,
+                  "name": "cat"
+                },
+                {
+                  "id": 2,
+                  "name": "dog"
+                },
+                {
+                  "id": 3,
+                  "name": "lizard"
+                },
+                {
+                  "id": 4,
+                  "name": "snake"
+                },
+                {
+                  "id": 5,
+                  "name": "bird"
+                },
+                {
+                  "id": 6,
+                  "name": "hamster"
+                }
+              ],
+              "cardinality": "List",
+              "optional": false
+            },
+            {
+              "name": "petForm",
+              "type": "Custom",
+              "example": {
+                "name": "",
+                "type": null,
+                "birthDate": null
+              },
+              "optional": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-found-event",
+              "type": "INBOUND",
+              "title": "Owner Found",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "pet-types-loaded-event",
+              "type": "INBOUND",
+              "title": "Pet Types Loaded",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "pet-registration-screen",
+              "type": "OUTBOUND",
+              "title": "Pet Registration Form Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "screens": [
+        {
+          "id": "pet-registration-screen",
+          "title": "Pet Registration Form Screen",
+          "type": "SCREEN",
+          "fields": [
+            {
+              "name": "petName",
+              "type": "String",
+              "example": "Fluffy",
+              "optional": false
+            },
+            {
+              "name": "petType",
+              "type": "String",
+              "example": "cat",
+              "optional": false
+            },
+            {
+              "name": "birthDate",
+              "type": "Date",
+              "example": "2023-05-15",
+              "optional": false
+            },
+            {
+              "name": "ownerInfo",
+              "type": "String",
+              "example": "George Franklin",
+              "optional": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "pet-registration-form-data",
+              "type": "INBOUND",
+              "title": "Pet Registration Form Data",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "register-pet-command",
+              "type": "OUTBOUND",
+              "title": "Register Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [
+        {
+          "id": "display-pet-form-spec",
+          "title": "Display Pet Registration Form",
+          "given": [
+            {
+              "title": "Owner Found",
+              "id": "owner-found-given",
+              "type": "SPEC_EVENT",
+              "examples": [
+                {
+                  "ownerId": 1,
+                  "ownerName": "George Franklin",
+                  "address": "110 W. Liberty St.",
+                  "city": "Madison",
+                  "telephone": "6085551023"
+                }
+              ]
+            },
+            {
+              "title": "Pet Types Loaded",
+              "id": "pet-types-loaded-given",
+              "type": "SPEC_EVENT",
+              "examples": [
+                {
+                  "petTypes": [
+                    {"id": 1, "name": "cat"},
+                    {"id": 2, "name": "dog"},
+                    {"id": 6, "name": "hamster"}
+                  ]
+                }
+              ]
+            }
+          ],
+          "when": [],
+          "then": [
+            {
+              "title": "Pet Registration Form Data",
+              "id": "pet-form-data-then",
+              "type": "SPEC_READMODEL",
+              "examples": [
+                {
+                  "ownerId": 1,
+                  "ownerName": "George Franklin",
+                  "availablePetTypes": [
+                    {"id": 1, "name": "cat"},
+                    {"id": 2, "name": "dog"},
+                    {"id": 6, "name": "hamster"}
+                  ],
+                  "petForm": {
+                    "name": "",
+                    "type": null,
+                    "birthDate": null
+                  }
+                }
+              ]
+            }
+          ],
+          "comments": [],
+          "linkedId": "pet-registration-form-display"
+        }
+      ],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet"]
+    },
+    {
+      "id": "pet-registration-submission",
+      "status": "Created",
+      "index": 2,
+      "title": "Register New Pet",
+      "context": "Process pet registration submission with validation and persistence",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "register-pet-command",
+          "title": "Register Pet",
+          "type": "COMMAND",
+          "fields": [
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": 1,
+              "idAttribute": true,
+              "optional": false
+            },
+            {
+              "name": "petName",
+              "type": "String",
+              "example": "Betty",
+              "optional": false
+            },
+            {
+              "name": "petType",
+              "type": "String",
+              "example": "hamster",
+              "optional": false
+            },
+            {
+              "name": "birthDate",
+              "type": "Date",
+              "example": "2015-02-12",
+              "optional": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "pet-registration-screen",
+              "type": "INBOUND",
+              "title": "Pet Registration Form Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "pet-registered-event",
+              "type": "OUTBOUND",
+              "title": "Pet Registered",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "events": [
+        {
+          "id": "pet-registered-event",
+          "title": "Pet Registered",
+          "type": "EVENT",
+          "fields": [
+            {
+              "name": "petId",
+              "type": "Int",
+              "example": 14,
+              "idAttribute": true,
+              "optional": false
+            },
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": 1,
+              "optional": false
+            },
+            {
+              "name": "petName",
+              "type": "String",
+              "example": "Betty",
+              "optional": false
+            },
+            {
+              "name": "petTypeId",
+              "type": "Int",
+              "example": 6,
+              "optional": false
+            },
+            {
+              "name": "petTypeName",
+              "type": "String",
+              "example": "hamster",
+              "optional": false
+            },
+            {
+              "name": "birthDate",
+              "type": "Date",
+              "example": "2015-02-12",
+              "optional": false
+            },
+            {
+              "name": "registrationTimestamp",
+              "type": "DateTime",
+              "example": "2024-01-15T10:30:00Z",
+              "optional": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "register-pet-command",
+              "type": "INBOUND",
+              "title": "Register Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [
+        {
+          "id": "successful-pet-registration-spec",
+          "title": "Successful Pet Registration",
+          "given": [
+            {
+              "title": "Valid Owner Exists",
+              "id": "valid-owner-given",
+              "type": "SPEC_EVENT",
+              "examples": [
+                {
+                  "ownerId": 1,
+                  "ownerName": "George Franklin"
+                }
+              ]
+            }
+          ],
+          "when": [
+            {
+              "title": "Register Pet",
+              "id": "register-pet-when",
+              "type": "SPEC_COMMAND",
+              "examples": [
+                {
+                  "ownerId": 1,
+                  "petName": "Betty",
+                  "petType": "hamster",
+                  "birthDate": "2015-02-12"
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "title": "Pet Registered",
+              "id": "pet-registered-then",
+              "type": "SPEC_EVENT",
+              "examples": [
+                {
+                  "petId": 14,
+                  "ownerId": 1,
+                  "petName": "Betty",
+                  "petTypeId": 6,
+                  "petTypeName": "hamster",
+                  "birthDate": "2015-02-12",
+                  "registrationTimestamp": "2024-01-15T10:30:00Z"
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {
+              "description": "Pet name must be unique within the owner's pets collection"
+            }
+          ],
+          "linkedId": "pet-registration-submission"
+        },
+        {
+          "id": "duplicate-pet-name-spec",
+          "title": "Duplicate Pet Name Validation",
+          "given": [
+            {
+              "title": "Owner with Existing Pet",
+              "id": "owner-with-pet-given",
+              "type": "SPEC_EVENT",
+              "examples": [
+                {
+                  "ownerId": 1,
+                  "existingPets": [
+                    {
+                      "name": "Betty",
+                      "type": "cat"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "when": [
+            {
+              "title": "Register Pet with Duplicate Name",
+              "id": "duplicate-name-when",
+              "type": "SPEC_COMMAND",
+              "examples": [
+                {
+                  "ownerId": 1,
+                  "petName": "Betty",
+                  "petType": "hamster",
+                  "birthDate": "2020-01-01"
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "title": "Pet Registration Failed - Duplicate Name",
+              "id": "duplicate-name-error-then",
+              "type": "SPEC_ERROR",
+              "examples": [
+                {
+                  "errorCode": "duplicate",
+                  "errorMessage": "already exists",
+                  "field": "name"
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {
+              "description": "Business rule: Pet names must be unique within an owner's collection"
+            }
+          ],
+          "linkedId": "pet-registration-submission"
+        },
+        {
+          "id": "missing-required-fields-spec",
+          "title": "Missing Required Fields Validation",
+          "given": [],
+          "when": [
+            {
+              "title": "Register Pet with Missing Fields",
+              "id": "missing-fields-when",
+              "type": "SPEC_COMMAND",
+              "examples": [
+                {
+                  "ownerId": 1,
+                  "petName": "",
+                  "petType": null,
+                  "birthDate": null
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "title": "Pet Registration Failed - Missing Required Fields",
+              "id": "missing-fields-error-then",
+              "type": "SPEC_ERROR",
+              "examples": [
+                {
+                  "validationErrors": [
+                    {
+                      "field": "name",
+                      "errorCode": "required",
+                      "errorMessage": "required"
+                    },
+                    {
+                      "field": "type",
+                      "errorCode": "required",
+                      "errorMessage": "required"
+                    },
+                    {
+                      "field": "birthDate",
+                      "errorCode": "required",
+                      "errorMessage": "required"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {
+              "description": "All pet fields (name, type, birthDate) are required for registration"
+            }
+          ],
+          "linkedId": "pet-registration-submission"
+        }
+      ],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet"]
+    }
+  ]
+}
