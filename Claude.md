@@ -20,6 +20,7 @@ Skip steps 1. and 3. if high-level-analysis.json is available. Extract the use c
 
 4. Detailed Flow analysis has fields defined on elements and works with examples in each field, follow the json schema. Goal - have a detailed flow to really understand data flow and also how data is structured using examples.
 
+5. put code references in "description" in each element, this can be full qualified class names, modules or packages
 
 ### Input Processing
 1. **Identify Domain & Aggregates:** Extract the core business domain and main entities
@@ -103,7 +104,7 @@ ReadModel → Screen: ReadModel(OUTBOUND) → Screen(INBOUND)
 ## Scenarios (Given/When/Then)
 
 Try to analyze Unit-Tests and comments to find valid Given / When / Then Scenarios.
-They should capture business rules hidden in the code.
+They should capture business rules hidden in the code - do not provide Given / When / Thens for simple validations like "must be a number", it should really capture business rules.
 
 ### STATE_CHANGE Scenarios
 - **Pattern:** GIVEN Event(s), WHEN Command, THEN Event(s)
@@ -181,6 +182,7 @@ Before outputting JSON, verify:
 - ✅ No circular dependencies exist
 - ✅ Scenarios are properly defined for each slice type
 - ✅ Aggregates are clearly identified and consistent
+- ✅ put code references in "description", this can be full qualified class names, modules or packages
 
 ---
 
@@ -326,6 +328,7 @@ Before outputting JSON, verify:
           "type": "array",
           "items": { "type": "string" }
         },
+        "description": {"type":"string"},
         "sketched": { "type": "boolean" },
         "prototype": { "type": "object" },
         "listElement": { "type": "boolean" }

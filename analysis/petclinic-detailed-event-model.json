@@ -1,0 +1,2975 @@
+{
+  "slices": [
+    {
+      "id": "owner-search-form-display",
+      "status": "Created",
+      "index": 1,
+      "title": "Display Owner Search Form",
+      "context": "Present search form for finding existing pet owners by last name",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "owner-search-form",
+          "title": "Owner Search Form",
+          "type": "READMODEL",
+          "description": "org.springframework.samples.petclinic.owner.OwnerController.initFindForm",
+          "fields": [
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "",
+              "optional": true,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-search-screen",
+              "type": "OUTBOUND",
+              "title": "Owner Search Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "screens": [
+        {
+          "id": "owner-search-screen",
+          "title": "Owner Search Screen",
+          "type": "SCREEN",
+          "description": "View: owners/findOwners - GET /owners/find",
+          "fields": [
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "Davis",
+              "optional": true,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-search-form",
+              "type": "INBOUND",
+              "title": "Owner Search Form",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "search-owners-command",
+              "type": "OUTBOUND",
+              "title": "Search Owners",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner",
+          "apiEndpoint": "GET /owners/find"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-search-execution",
+      "status": "Created",
+      "index": 2,
+      "title": "Search for Owners",
+      "context": "Execute owner search by last name prefix matching and handle different result scenarios",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "search-owners-command",
+          "title": "Search Owners",
+          "type": "COMMAND",
+          "description": "org.springframework.samples.petclinic.owner.OwnerController.processFindForm - POST /owners",
+          "fields": [
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "Davis",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-search-screen",
+              "type": "INBOUND",
+              "title": "Owner Search Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "owners-found-event",
+              "type": "OUTBOUND",
+              "title": "Owners Found",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "no-owners-found-event",
+              "type": "OUTBOUND",
+              "title": "No Owners Found",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Owner",
+          "apiEndpoint": "GET /owners"
+        }
+      ],
+      "events": [
+        {
+          "id": "owners-found-event",
+          "title": "Owners Found",
+          "type": "EVENT",
+          "description": "org.springframework.samples.petclinic.owner.OwnerRepository.findByLastName",
+          "fields": [
+            {
+              "name": "owners",
+              "type": "Custom",
+              "cardinality": "List",
+              "example": {
+                "id": 1,
+                "firstName": "George",
+                "lastName": "Davis",
+                "address": "123 Main St",
+                "city": "Madison",
+                "telephone": "6085551023",
+                "pets": []
+              },
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "count",
+              "type": "Int",
+              "example": "2",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "search-owners-command",
+              "type": "INBOUND",
+              "title": "Search Owners",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner"
+        },
+        {
+          "id": "no-owners-found-event",
+          "title": "No Owners Found",
+          "type": "EVENT",
+          "description": "Triggered when search returns empty collection",
+          "fields": [
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "Unknown",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "errorCode",
+              "type": "String",
+              "example": "notFound",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "search-owners-command",
+              "type": "INBOUND",
+              "title": "Search Owners",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [
+        {
+          "id": "spec-owner-search-multiple",
+          "title": "Search returns multiple owners",
+          "vertical": false,
+          "given": [
+            {
+              "id": "given-owners-exist",
+              "title": "Multiple owners exist with matching last name",
+              "type": "SPEC_EVENT",
+              "linkedId": "owner-registered-event",
+              "fields": [
+                {"name": "lastName", "type": "String", "example": "Davis"}
+              ],
+              "examples": [
+                {"firstName": "George", "lastName": "Davis"},
+                {"firstName": "Betty", "lastName": "Davis"}
+              ]
+            }
+          ],
+          "when": [
+            {
+              "id": "when-search-davis",
+              "title": "Search Owners",
+              "type": "SPEC_COMMAND",
+              "linkedId": "search-owners-command",
+              "fields": [
+                {"name": "lastName", "type": "String"}
+              ],
+              "examples": [
+                {"lastName": "Davis"}
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-multiple-found",
+              "title": "Owners Found",
+              "type": "SPEC_EVENT",
+              "linkedId": "owners-found-event",
+              "fields": [
+                {"name": "count", "type": "Int"}
+              ],
+              "examples": [
+                {"count": 2}
+              ]
+            }
+          ],
+          "comments": [],
+          "linkedId": "owner-search-execution"
+        },
+        {
+          "id": "spec-owner-search-none",
+          "title": "Search returns no owners",
+          "vertical": false,
+          "given": [
+            {
+              "id": "given-no-matching-owners",
+              "title": "No owners exist with matching last name",
+              "type": "SPEC_EVENT",
+              "linkedId": "owner-registered-event",
+              "fields": [],
+              "examples": []
+            }
+          ],
+          "when": [
+            {
+              "id": "when-search-unknown",
+              "title": "Search Owners",
+              "type": "SPEC_COMMAND",
+              "linkedId": "search-owners-command",
+              "fields": [
+                {"name": "lastName", "type": "String"}
+              ],
+              "examples": [
+                {"lastName": "Unknown"}
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-none-found",
+              "title": "No Owners Found",
+              "type": "SPEC_EVENT",
+              "linkedId": "no-owners-found-event",
+              "fields": [
+                {"name": "errorCode", "type": "String"}
+              ],
+              "examples": [
+                {"errorCode": "notFound"}
+              ]
+            }
+          ],
+          "comments": [
+            {"description": "Error message displayed: 'not found'"}
+          ],
+          "linkedId": "owner-search-execution"
+        }
+      ],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-search-results-display",
+      "status": "Created",
+      "index": 3,
+      "title": "Display Owner Search Results",
+      "context": "Show search results - single owner redirect, multiple owners list, or no results error",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "owner-search-results",
+          "title": "Owner Search Results",
+          "type": "READMODEL",
+          "description": "Built from Owners Found or No Owners Found events",
+          "fields": [
+            {
+              "name": "owners",
+              "type": "Custom",
+              "cardinality": "List",
+              "example": {
+                "id": 1,
+                "firstName": "George",
+                "lastName": "Davis",
+                "address": "123 Main St",
+                "city": "Madison",
+                "telephone": "6085551023"
+              },
+              "optional": true,
+              "idAttribute": false
+            },
+            {
+              "name": "error",
+              "type": "String",
+              "example": "not found",
+              "optional": true,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owners-found-event",
+              "type": "INBOUND",
+              "title": "Owners Found",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "no-owners-found-event",
+              "type": "INBOUND",
+              "title": "No Owners Found",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "owner-list-screen",
+              "type": "OUTBOUND",
+              "title": "Owner List Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "screens": [
+        {
+          "id": "owner-list-screen",
+          "title": "Owner List Screen",
+          "type": "SCREEN",
+          "description": "View: owners/ownersList - Displays when multiple owners found",
+          "fields": [
+            {
+              "name": "owners",
+              "type": "Custom",
+              "cardinality": "List",
+              "example": {
+                "id": 1,
+                "firstName": "George",
+                "lastName": "Davis",
+                "address": "123 Main St",
+                "city": "Madison",
+                "telephone": "6085551023"
+              },
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-search-results",
+              "type": "INBOUND",
+              "title": "Owner Search Results",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "select-owner-command",
+              "type": "OUTBOUND",
+              "title": "Select Owner",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-selection",
+      "status": "Created",
+      "index": 4,
+      "title": "Select Owner from List",
+      "context": "User selects a specific owner from search results to view details",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "select-owner-command",
+          "title": "Select Owner",
+          "type": "COMMAND",
+          "description": "Navigation to owner profile via link click",
+          "fields": [
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": true
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-list-screen",
+              "type": "INBOUND",
+              "title": "Owner List Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "owner-selected-event",
+              "type": "OUTBOUND",
+              "title": "Owner Selected",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "events": [
+        {
+          "id": "owner-selected-event",
+          "title": "Owner Selected",
+          "type": "EVENT",
+          "description": "Owner details loaded for viewing",
+          "fields": [
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": true
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "select-owner-command",
+              "type": "INBOUND",
+              "title": "Select Owner",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-registration-form-display",
+      "status": "Created",
+      "index": 5,
+      "title": "Display Owner Registration Form",
+      "context": "Present form for registering a new pet owner with validation rules",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "owner-registration-form",
+          "title": "Owner Registration Form",
+          "type": "READMODEL",
+          "description": "org.springframework.samples.petclinic.owner.OwnerController.initCreationForm",
+          "fields": [
+            {
+              "name": "firstName",
+              "type": "String",
+              "example": "",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "address",
+              "type": "String",
+              "example": "",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "city",
+              "type": "String",
+              "example": "",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "telephone",
+              "type": "String",
+              "example": "",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-registration-screen",
+              "type": "OUTBOUND",
+              "title": "Owner Registration Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "screens": [
+        {
+          "id": "owner-registration-screen",
+          "title": "Owner Registration Screen",
+          "type": "SCREEN",
+          "description": "View: owners/createOrUpdateOwnerForm - GET /owners/new",
+          "fields": [
+            {
+              "name": "firstName",
+              "type": "String",
+              "example": "John",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "Doe",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "address",
+              "type": "String",
+              "example": "123 Oak Street",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "city",
+              "type": "String",
+              "example": "Madison",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "telephone",
+              "type": "String",
+              "example": "6085551234",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-registration-form",
+              "type": "INBOUND",
+              "title": "Owner Registration Form",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "register-owner-command",
+              "type": "OUTBOUND",
+              "title": "Register Owner",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner",
+          "apiEndpoint": "GET /owners/new"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-registration-submission",
+      "status": "Created",
+      "index": 6,
+      "title": "Register New Owner",
+      "context": "Process owner registration with validation and persistence",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "register-owner-command",
+          "title": "Register Owner",
+          "type": "COMMAND",
+          "description": "org.springframework.samples.petclinic.owner.OwnerController.processCreationForm - POST /owners/new",
+          "fields": [
+            {
+              "name": "firstName",
+              "type": "String",
+              "example": "John",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "Doe",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "address",
+              "type": "String",
+              "example": "123 Oak Street",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "city",
+              "type": "String",
+              "example": "Madison",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "telephone",
+              "type": "String",
+              "example": "6085551234",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-registration-screen",
+              "type": "INBOUND",
+              "title": "Owner Registration Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "owner-registered-event",
+              "type": "OUTBOUND",
+              "title": "Owner Registered",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Owner",
+          "apiEndpoint": "POST /owners/new",
+          "createsAggregate": true
+        }
+      ],
+      "events": [
+        {
+          "id": "owner-registered-event",
+          "title": "Owner Registered",
+          "type": "EVENT",
+          "description": "org.springframework.samples.petclinic.owner.OwnerRepository.save - Owner persisted in owners table",
+          "fields": [
+            {
+              "name": "id",
+              "type": "Int",
+              "example": "11",
+              "optional": false,
+              "idAttribute": true,
+              "generated": true
+            },
+            {
+              "name": "firstName",
+              "type": "String",
+              "example": "John",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "Doe",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "address",
+              "type": "String",
+              "example": "123 Oak Street",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "city",
+              "type": "String",
+              "example": "Madison",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "telephone",
+              "type": "String",
+              "example": "6085551234",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "register-owner-command",
+              "type": "INBOUND",
+              "title": "Register Owner",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [
+        {
+          "id": "spec-owner-registration-valid",
+          "title": "Valid owner registration succeeds",
+          "vertical": false,
+          "given": [],
+          "when": [
+            {
+              "id": "when-register-valid-owner",
+              "title": "Register Owner",
+              "type": "SPEC_COMMAND",
+              "linkedId": "register-owner-command",
+              "fields": [
+                {"name": "firstName", "type": "String"},
+                {"name": "lastName", "type": "String"},
+                {"name": "address", "type": "String"},
+                {"name": "city", "type": "String"},
+                {"name": "telephone", "type": "String"}
+              ],
+              "examples": [
+                {
+                  "firstName": "John",
+                  "lastName": "Doe",
+                  "address": "123 Oak Street",
+                  "city": "Madison",
+                  "telephone": "6085551234"
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-owner-registered",
+              "title": "Owner Registered",
+              "type": "SPEC_EVENT",
+              "linkedId": "owner-registered-event",
+              "fields": [
+                {"name": "id", "type": "Int"},
+                {"name": "firstName", "type": "String"},
+                {"name": "telephone", "type": "String"}
+              ],
+              "examples": [
+                {
+                  "id": 11,
+                  "firstName": "John",
+                  "telephone": "6085551234"
+                }
+              ]
+            }
+          ],
+          "comments": [],
+          "linkedId": "owner-registration-submission"
+        },
+        {
+          "id": "spec-owner-registration-invalid-phone",
+          "title": "Invalid telephone format prevents registration",
+          "vertical": false,
+          "given": [],
+          "when": [
+            {
+              "id": "when-register-invalid-phone",
+              "title": "Register Owner",
+              "type": "SPEC_COMMAND",
+              "linkedId": "register-owner-command",
+              "fields": [
+                {"name": "telephone", "type": "String"}
+              ],
+              "examples": [
+                {"telephone": "12345678901"}
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-validation-error",
+              "title": "Validation Error",
+              "type": "SPEC_ERROR",
+              "fields": [
+                {"name": "field", "type": "String"},
+                {"name": "error", "type": "String"}
+              ],
+              "examples": [
+                {
+                  "field": "telephone",
+                  "error": "numeric value out of bounds (<10 digits>.<0 digits> expected)"
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {"description": "Validation: @Digits(fraction=0, integer=10) - maximum 10 digits"}
+          ],
+          "linkedId": "owner-registration-submission"
+        },
+        {
+          "id": "spec-owner-registration-missing-fields",
+          "title": "Missing required fields prevents registration",
+          "vertical": false,
+          "given": [],
+          "when": [
+            {
+              "id": "when-register-missing-fields",
+              "title": "Register Owner",
+              "type": "SPEC_COMMAND",
+              "linkedId": "register-owner-command",
+              "fields": [
+                {"name": "firstName", "type": "String"},
+                {"name": "lastName", "type": "String"}
+              ],
+              "examples": [
+                {
+                  "firstName": "",
+                  "lastName": ""
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-required-error",
+              "title": "Validation Error",
+              "type": "SPEC_ERROR",
+              "fields": [
+                {"name": "error", "type": "String"}
+              ],
+              "examples": [
+                {"error": "must not be empty"}
+              ]
+            }
+          ],
+          "comments": [
+            {"description": "All fields marked with @NotEmpty must have values"}
+          ],
+          "linkedId": "owner-registration-submission"
+        }
+      ],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-profile-display",
+      "status": "Created",
+      "index": 7,
+      "title": "Display Owner Profile",
+      "context": "Show owner details with their pets and visit history",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "owner-profile-data",
+          "title": "Owner Profile Data",
+          "type": "READMODEL",
+          "description": "org.springframework.samples.petclinic.owner.OwnerController.showOwner - Aggregates owner, pets, and visits",
+          "fields": [
+            {
+              "name": "id",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": true
+            },
+            {
+              "name": "firstName",
+              "type": "String",
+              "example": "George",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "Franklin",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "address",
+              "type": "String",
+              "example": "110 W. Liberty St.",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "city",
+              "type": "String",
+              "example": "Madison",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "telephone",
+              "type": "String",
+              "example": "6085551023",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "pets",
+              "type": "Custom",
+              "cardinality": "List",
+              "example": {
+                "id": 1,
+                "name": "Leo",
+                "birthDate": "2010-09-07",
+                "type": "cat",
+                "visits": [
+                  {
+                    "id": 1,
+                    "date": "2013-01-01",
+                    "description": "rabies shot"
+                  }
+                ]
+              },
+              "optional": true,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-registered-event",
+              "type": "INBOUND",
+              "title": "Owner Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "owner-selected-event",
+              "type": "INBOUND",
+              "title": "Owner Selected",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "pet-registered-event",
+              "type": "INBOUND",
+              "title": "Pet Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "visit-scheduled-event",
+              "type": "INBOUND",
+              "title": "Visit Scheduled",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "owner-profile-screen",
+              "type": "OUTBOUND",
+              "title": "Owner Profile Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "screens": [
+        {
+          "id": "owner-profile-screen",
+          "title": "Owner Profile Screen",
+          "type": "SCREEN",
+          "description": "View: owners/ownerDetails - GET /owners/{ownerId}",
+          "fields": [
+            {
+              "name": "owner",
+              "type": "Custom",
+              "example": {
+                "id": 1,
+                "firstName": "George",
+                "lastName": "Franklin",
+                "address": "110 W. Liberty St.",
+                "city": "Madison",
+                "telephone": "6085551023"
+              },
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "pets",
+              "type": "Custom",
+              "cardinality": "List",
+              "example": {
+                "name": "Leo",
+                "birthDate": "2010-09-07",
+                "type": "cat",
+                "visits": []
+              },
+              "optional": true,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-profile-data",
+              "type": "INBOUND",
+              "title": "Owner Profile Data",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "edit-owner-command",
+              "type": "OUTBOUND",
+              "title": "Edit Owner",
+              "elementType": "COMMAND"
+            },
+            {
+              "id": "add-pet-command",
+              "type": "OUTBOUND",
+              "title": "Add Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner",
+          "apiEndpoint": "GET /owners/{ownerId}"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-update-form-display",
+      "status": "Created",
+      "index": 8,
+      "title": "Display Owner Update Form",
+      "context": "Present form for editing existing owner information pre-populated with current data",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "owner-update-form",
+          "title": "Owner Update Form",
+          "type": "READMODEL",
+          "description": "org.springframework.samples.petclinic.owner.OwnerController.initUpdateOwnerForm - GET /owners/{ownerId}/edit",
+          "fields": [
+            {
+              "name": "id",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": true
+            },
+            {
+              "name": "firstName",
+              "type": "String",
+              "example": "George",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "Franklin",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "address",
+              "type": "String",
+              "example": "110 W. Liberty St.",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "city",
+              "type": "String",
+              "example": "Madison",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "telephone",
+              "type": "String",
+              "example": "6085551023",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-registered-event",
+              "type": "INBOUND",
+              "title": "Owner Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "owner-update-screen",
+              "type": "OUTBOUND",
+              "title": "Owner Update Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "screens": [
+        {
+          "id": "owner-update-screen",
+          "title": "Owner Update Screen",
+          "type": "SCREEN",
+          "description": "View: owners/createOrUpdateOwnerForm - Same view as registration",
+          "fields": [
+            {
+              "name": "firstName",
+              "type": "String",
+              "example": "George",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "Franklin",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "address",
+              "type": "String",
+              "example": "110 W. Liberty St.",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "city",
+              "type": "String",
+              "example": "Madison",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "telephone",
+              "type": "String",
+              "example": "6085551023",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-update-form",
+              "type": "INBOUND",
+              "title": "Owner Update Form",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "update-owner-command",
+              "type": "OUTBOUND",
+              "title": "Update Owner",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner",
+          "apiEndpoint": "GET /owners/{ownerId}/edit"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-update-initiation",
+      "status": "Created",
+      "index": 9,
+      "title": "Initiate Owner Update",
+      "context": "User clicks Edit Owner button from profile page",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "edit-owner-command",
+          "title": "Edit Owner",
+          "type": "COMMAND",
+          "description": "Navigation to edit form",
+          "fields": [
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": true
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-profile-screen",
+              "type": "INBOUND",
+              "title": "Owner Profile Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "owner-edit-initiated-event",
+              "type": "OUTBOUND",
+              "title": "Owner Edit Initiated",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "events": [
+        {
+          "id": "owner-edit-initiated-event",
+          "title": "Owner Edit Initiated",
+          "type": "EVENT",
+          "description": "Owner data loaded for editing",
+          "fields": [
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": true
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "edit-owner-command",
+              "type": "INBOUND",
+              "title": "Edit Owner",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-update-submission",
+      "status": "Created",
+      "index": 10,
+      "title": "Update Owner Information",
+      "context": "Process owner information updates with validation",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "update-owner-command",
+          "title": "Update Owner",
+          "type": "COMMAND",
+          "description": "org.springframework.samples.petclinic.owner.OwnerController.processUpdateOwnerForm - POST /owners/{ownerId}/edit",
+          "fields": [
+            {
+              "name": "id",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": true
+            },
+            {
+              "name": "firstName",
+              "type": "String",
+              "example": "George",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "Franklin",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "address",
+              "type": "String",
+              "example": "111 W. Liberty St.",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "city",
+              "type": "String",
+              "example": "Madison",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "telephone",
+              "type": "String",
+              "example": "6085551024",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-update-screen",
+              "type": "INBOUND",
+              "title": "Owner Update Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "owner-updated-event",
+              "type": "OUTBOUND",
+              "title": "Owner Updated",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Owner",
+          "apiEndpoint": "POST /owners/{ownerId}/edit"
+        }
+      ],
+      "events": [
+        {
+          "id": "owner-updated-event",
+          "title": "Owner Updated",
+          "type": "EVENT",
+          "description": "org.springframework.samples.petclinic.owner.OwnerRepository.save - Owner data updated in owners table",
+          "fields": [
+            {
+              "name": "id",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": true
+            },
+            {
+              "name": "firstName",
+              "type": "String",
+              "example": "George",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "Franklin",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "address",
+              "type": "String",
+              "example": "111 W. Liberty St.",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "city",
+              "type": "String",
+              "example": "Madison",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "telephone",
+              "type": "String",
+              "example": "6085551024",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "update-owner-command",
+              "type": "INBOUND",
+              "title": "Update Owner",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [
+        {
+          "id": "spec-owner-update-valid",
+          "title": "Valid owner update succeeds",
+          "vertical": false,
+          "given": [
+            {
+              "id": "given-owner-exists",
+              "title": "Owner Registered",
+              "type": "SPEC_EVENT",
+              "linkedId": "owner-registered-event",
+              "fields": [
+                {"name": "id", "type": "Int"},
+                {"name": "address", "type": "String"}
+              ],
+              "examples": [
+                {
+                  "id": 1,
+                  "address": "110 W. Liberty St."
+                }
+              ]
+            }
+          ],
+          "when": [
+            {
+              "id": "when-update-owner",
+              "title": "Update Owner",
+              "type": "SPEC_COMMAND",
+              "linkedId": "update-owner-command",
+              "fields": [
+                {"name": "id", "type": "Int"},
+                {"name": "address", "type": "String"}
+              ],
+              "examples": [
+                {
+                  "id": 1,
+                  "address": "111 W. Liberty St."
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-owner-updated",
+              "title": "Owner Updated",
+              "type": "SPEC_EVENT",
+              "linkedId": "owner-updated-event",
+              "fields": [
+                {"name": "id", "type": "Int"},
+                {"name": "address", "type": "String"}
+              ],
+              "examples": [
+                {
+                  "id": 1,
+                  "address": "111 W. Liberty St."
+                }
+              ]
+            }
+          ],
+          "comments": [],
+          "linkedId": "owner-update-submission"
+        }
+      ],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "pet-registration-form-display",
+      "status": "Created",
+      "index": 11,
+      "title": "Display Pet Registration Form",
+      "context": "Present form for registering a new pet to an existing owner with available pet types",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "pet-registration-form-data",
+          "title": "Pet Registration Form Data",
+          "type": "READMODEL",
+          "description": "org.springframework.samples.petclinic.owner.PetController.initCreationForm - GET /owners/{ownerId}/pets/new",
+          "fields": [
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "name",
+              "type": "String",
+              "example": "",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "birthDate",
+              "type": "Date",
+              "example": "",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "type",
+              "type": "Custom",
+              "example": "",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "availableTypes",
+              "type": "Custom",
+              "cardinality": "List",
+              "example": {
+                "id": 1,
+                "name": "cat"
+              },
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-registered-event",
+              "type": "INBOUND",
+              "title": "Owner Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "pet-types-loaded-event",
+              "type": "INBOUND",
+              "title": "Pet Types Loaded",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "pet-registration-screen",
+              "type": "OUTBOUND",
+              "title": "Pet Registration Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "screens": [
+        {
+          "id": "pet-registration-screen",
+          "title": "Pet Registration Screen",
+          "type": "SCREEN",
+          "description": "View: pets/createOrUpdatePetForm",
+          "fields": [
+            {
+              "name": "name",
+              "type": "String",
+              "example": "Max",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "birthDate",
+              "type": "Date",
+              "example": "2020-05-15",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "type",
+              "type": "Custom",
+              "example": {"id": 2, "name": "dog"},
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "pet-registration-form-data",
+              "type": "INBOUND",
+              "title": "Pet Registration Form Data",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "register-pet-command",
+              "type": "OUTBOUND",
+              "title": "Register Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Pet",
+          "apiEndpoint": "GET /owners/{ownerId}/pets/new"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet"]
+    },
+    {
+      "id": "pet-registration-initiation",
+      "status": "Created",
+      "index": 12,
+      "title": "Initiate Pet Registration",
+      "context": "User clicks Add New Pet button from owner profile",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "add-pet-command",
+          "title": "Add Pet",
+          "type": "COMMAND",
+          "description": "Navigation to pet registration form",
+          "fields": [
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-profile-screen",
+              "type": "INBOUND",
+              "title": "Owner Profile Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "pet-registration-initiated-event",
+              "type": "OUTBOUND",
+              "title": "Pet Registration Initiated",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "events": [
+        {
+          "id": "pet-registration-initiated-event",
+          "title": "Pet Registration Initiated",
+          "type": "EVENT",
+          "description": "Pet registration form loaded",
+          "fields": [
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "add-pet-command",
+              "type": "INBOUND",
+              "title": "Add Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet"]
+    },
+    {
+      "id": "pet-registration-submission",
+      "status": "Created",
+      "index": 13,
+      "title": "Register New Pet",
+      "context": "Process pet registration with validation and persistence",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "register-pet-command",
+          "title": "Register Pet",
+          "type": "COMMAND",
+          "description": "org.springframework.samples.petclinic.owner.PetController.processCreationForm - POST /owners/{ownerId}/pets/new",
+          "fields": [
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "name",
+              "type": "String",
+              "example": "Max",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "birthDate",
+              "type": "Date",
+              "example": "2020-05-15",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "typeId",
+              "type": "Int",
+              "example": "2",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "pet-registration-screen",
+              "type": "INBOUND",
+              "title": "Pet Registration Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "pet-registered-event",
+              "type": "OUTBOUND",
+              "title": "Pet Registered",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Pet",
+          "apiEndpoint": "POST /owners/{ownerId}/pets/new",
+          "createsAggregate": true
+        }
+      ],
+      "events": [
+        {
+          "id": "pet-registered-event",
+          "title": "Pet Registered",
+          "type": "EVENT",
+          "description": "org.springframework.samples.petclinic.owner.PetRepository.save - Pet persisted in pets table",
+          "fields": [
+            {
+              "name": "id",
+              "type": "Int",
+              "example": "14",
+              "optional": false,
+              "idAttribute": true,
+              "generated": true
+            },
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "name",
+              "type": "String",
+              "example": "Max",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "birthDate",
+              "type": "Date",
+              "example": "2020-05-15",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "typeId",
+              "type": "Int",
+              "example": "2",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "typeName",
+              "type": "String",
+              "example": "dog",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "register-pet-command",
+              "type": "INBOUND",
+              "title": "Register Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [
+        {
+          "id": "spec-pet-registration-valid",
+          "title": "Valid pet registration succeeds",
+          "vertical": false,
+          "given": [
+            {
+              "id": "given-owner-exists-for-pet",
+              "title": "Owner Registered",
+              "type": "SPEC_EVENT",
+              "linkedId": "owner-registered-event",
+              "fields": [
+                {"name": "id", "type": "Int"}
+              ],
+              "examples": [
+                {"id": 1}
+              ]
+            }
+          ],
+          "when": [
+            {
+              "id": "when-register-pet",
+              "title": "Register Pet",
+              "type": "SPEC_COMMAND",
+              "linkedId": "register-pet-command",
+              "fields": [
+                {"name": "name", "type": "String"},
+                {"name": "birthDate", "type": "Date"},
+                {"name": "typeId", "type": "Int"}
+              ],
+              "examples": [
+                {
+                  "name": "Max",
+                  "birthDate": "2020-05-15",
+                  "typeId": 2
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-pet-registered",
+              "title": "Pet Registered",
+              "type": "SPEC_EVENT",
+              "linkedId": "pet-registered-event",
+              "fields": [
+                {"name": "id", "type": "Int"},
+                {"name": "name", "type": "String"},
+                {"name": "typeName", "type": "String"}
+              ],
+              "examples": [
+                {
+                  "id": 14,
+                  "name": "Max",
+                  "typeName": "dog"
+                }
+              ]
+            }
+          ],
+          "comments": [],
+          "linkedId": "pet-registration-submission"
+        },
+        {
+          "id": "spec-pet-registration-missing-name",
+          "title": "Pet registration without name fails",
+          "vertical": false,
+          "given": [
+            {
+              "id": "given-owner-exists-2",
+              "title": "Owner Registered",
+              "type": "SPEC_EVENT",
+              "linkedId": "owner-registered-event",
+              "fields": [
+                {"name": "id", "type": "Int"}
+              ],
+              "examples": [
+                {"id": 1}
+              ]
+            }
+          ],
+          "when": [
+            {
+              "id": "when-register-pet-no-name",
+              "title": "Register Pet",
+              "type": "SPEC_COMMAND",
+              "linkedId": "register-pet-command",
+              "fields": [
+                {"name": "name", "type": "String"}
+              ],
+              "examples": [
+                {"name": ""}
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-name-required-error",
+              "title": "Validation Error",
+              "type": "SPEC_ERROR",
+              "fields": [
+                {"name": "field", "type": "String"},
+                {"name": "error", "type": "String"}
+              ],
+              "examples": [
+                {
+                  "field": "name",
+                  "error": "required"
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {"description": "PetValidator validates name is not empty"}
+          ],
+          "linkedId": "pet-registration-submission"
+        },
+        {
+          "id": "spec-pet-registration-missing-type",
+          "title": "New pet registration without type fails",
+          "vertical": false,
+          "given": [
+            {
+              "id": "given-owner-exists-3",
+              "title": "Owner Registered",
+              "type": "SPEC_EVENT",
+              "linkedId": "owner-registered-event",
+              "fields": [
+                {"name": "id", "type": "Int"}
+              ],
+              "examples": [
+                {"id": 1}
+              ]
+            }
+          ],
+          "when": [
+            {
+              "id": "when-register-pet-no-type",
+              "title": "Register Pet",
+              "type": "SPEC_COMMAND",
+              "linkedId": "register-pet-command",
+              "fields": [
+                {"name": "name", "type": "String"},
+                {"name": "typeId", "type": "Int"}
+              ],
+              "examples": [
+                {
+                  "name": "Max",
+                  "typeId": null
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-type-required-error",
+              "title": "Validation Error",
+              "type": "SPEC_ERROR",
+              "fields": [
+                {"name": "field", "type": "String"},
+                {"name": "error", "type": "String"}
+              ],
+              "examples": [
+                {
+                  "field": "type",
+                  "error": "required"
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {"description": "PetValidator: if (pet.isNew && pet.type == null) - type required for new pets"}
+          ],
+          "linkedId": "pet-registration-submission"
+        },
+        {
+          "id": "spec-pet-registration-duplicate-name",
+          "title": "Pet with duplicate name for same owner fails",
+          "vertical": false,
+          "given": [
+            {
+              "id": "given-owner-has-pet",
+              "title": "Pet Registered",
+              "type": "SPEC_EVENT",
+              "linkedId": "pet-registered-event",
+              "fields": [
+                {"name": "ownerId", "type": "Int"},
+                {"name": "name", "type": "String"}
+              ],
+              "examples": [
+                {
+                  "ownerId": 1,
+                  "name": "Leo"
+                }
+              ]
+            }
+          ],
+          "when": [
+            {
+              "id": "when-register-duplicate-pet",
+              "title": "Register Pet",
+              "type": "SPEC_COMMAND",
+              "linkedId": "register-pet-command",
+              "fields": [
+                {"name": "ownerId", "type": "Int"},
+                {"name": "name", "type": "String"}
+              ],
+              "examples": [
+                {
+                  "ownerId": 1,
+                  "name": "Leo"
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-duplicate-error",
+              "title": "Validation Error",
+              "type": "SPEC_ERROR",
+              "fields": [
+                {"name": "field", "type": "String"},
+                {"name": "error", "type": "String"}
+              ],
+              "examples": [
+                {
+                  "field": "name",
+                  "error": "duplicate - already exists"
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {"description": "PetController checks: if (owner.getPet(pet.name!!, true) != null) - reject duplicate names"}
+          ],
+          "linkedId": "pet-registration-submission"
+        }
+      ],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet"]
+    },
+    {
+      "id": "pet-update-form-display",
+      "status": "Created",
+      "index": 14,
+      "title": "Display Pet Update Form",
+      "context": "Present form for editing existing pet information pre-populated with current data",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "pet-update-form",
+          "title": "Pet Update Form",
+          "type": "READMODEL",
+          "description": "org.springframework.samples.petclinic.owner.PetController.initUpdateForm - GET /owners/{ownerId}/pets/{petId}/edit",
+          "fields": [
+            {
+              "name": "id",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": true
+            },
+            {
+              "name": "name",
+              "type": "String",
+              "example": "Leo",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "birthDate",
+              "type": "Date",
+              "example": "2010-09-07",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "type",
+              "type": "Custom",
+              "example": {"id": 1, "name": "cat"},
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "availableTypes",
+              "type": "Custom",
+              "cardinality": "List",
+              "example": {
+                "id": 1,
+                "name": "cat"
+              },
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "pet-registered-event",
+              "type": "INBOUND",
+              "title": "Pet Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "pet-types-loaded-event",
+              "type": "INBOUND",
+              "title": "Pet Types Loaded",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "pet-update-screen",
+              "type": "OUTBOUND",
+              "title": "Pet Update Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "screens": [
+        {
+          "id": "pet-update-screen",
+          "title": "Pet Update Screen",
+          "type": "SCREEN",
+          "description": "View: pets/createOrUpdatePetForm - Same view as registration",
+          "fields": [
+            {
+              "name": "name",
+              "type": "String",
+              "example": "Leo",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "birthDate",
+              "type": "Date",
+              "example": "2010-09-07",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "type",
+              "type": "Custom",
+              "example": {"id": 1, "name": "cat"},
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "pet-update-form",
+              "type": "INBOUND",
+              "title": "Pet Update Form",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "update-pet-command",
+              "type": "OUTBOUND",
+              "title": "Update Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Pet",
+          "apiEndpoint": "GET /owners/{ownerId}/pets/{petId}/edit"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet"]
+    },
+    {
+      "id": "pet-update-submission",
+      "status": "Created",
+      "index": 15,
+      "title": "Update Pet Information",
+      "context": "Process pet information updates with validation",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "update-pet-command",
+          "title": "Update Pet",
+          "type": "COMMAND",
+          "description": "org.springframework.samples.petclinic.owner.PetController.processUpdateForm - POST /owners/{ownerId}/pets/{petId}/edit",
+          "fields": [
+            {
+              "name": "id",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": true
+            },
+            {
+              "name": "name",
+              "type": "String",
+              "example": "Leo",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "birthDate",
+              "type": "Date",
+              "example": "2010-09-07",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "typeId",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "pet-update-screen",
+              "type": "INBOUND",
+              "title": "Pet Update Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "pet-updated-event",
+              "type": "OUTBOUND",
+              "title": "Pet Updated",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Pet",
+          "apiEndpoint": "POST /owners/{ownerId}/pets/{petId}/edit"
+        }
+      ],
+      "events": [
+        {
+          "id": "pet-updated-event",
+          "title": "Pet Updated",
+          "type": "EVENT",
+          "description": "org.springframework.samples.petclinic.owner.PetRepository.save - Pet data updated in pets table",
+          "fields": [
+            {
+              "name": "id",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": true
+            },
+            {
+              "name": "name",
+              "type": "String",
+              "example": "Leo",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "birthDate",
+              "type": "Date",
+              "example": "2010-09-07",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "typeId",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "update-pet-command",
+              "type": "INBOUND",
+              "title": "Update Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Pet"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet"]
+    },
+    {
+      "id": "visit-booking-form-display",
+      "status": "Created",
+      "index": 16,
+      "title": "Display Visit Booking Form",
+      "context": "Present form for scheduling a veterinary visit for a pet",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "visit-booking-form",
+          "title": "Visit Booking Form",
+          "type": "READMODEL",
+          "description": "org.springframework.samples.petclinic.owner.VisitController.initNewVisitForm - GET /owners/*/pets/{petId}/visits/new",
+          "fields": [
+            {
+              "name": "petId",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "petName",
+              "type": "String",
+              "example": "Leo",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "date",
+              "type": "Date",
+              "example": "2025-10-21",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "description",
+              "type": "String",
+              "example": "",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "pet-registered-event",
+              "type": "INBOUND",
+              "title": "Pet Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "visit-booking-screen",
+              "type": "OUTBOUND",
+              "title": "Visit Booking Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Visit"
+        }
+      ],
+      "screens": [
+        {
+          "id": "visit-booking-screen",
+          "title": "Visit Booking Screen",
+          "type": "SCREEN",
+          "description": "View: pets/createOrUpdateVisitForm",
+          "fields": [
+            {
+              "name": "date",
+              "type": "Date",
+              "example": "2025-10-21",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "description",
+              "type": "String",
+              "example": "Annual checkup",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "visit-booking-form",
+              "type": "INBOUND",
+              "title": "Visit Booking Form",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "schedule-visit-command",
+              "type": "OUTBOUND",
+              "title": "Schedule Visit",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Visit",
+          "apiEndpoint": "GET /owners/*/pets/{petId}/visits/new"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Visit"]
+    },
+    {
+      "id": "visit-booking-submission",
+      "status": "Created",
+      "index": 17,
+      "title": "Schedule Pet Visit",
+      "context": "Process visit booking with validation and persistence",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "schedule-visit-command",
+          "title": "Schedule Visit",
+          "type": "COMMAND",
+          "description": "org.springframework.samples.petclinic.owner.VisitController.processNewVisitForm - POST /owners/{ownerId}/pets/{petId}/visits/new",
+          "fields": [
+            {
+              "name": "petId",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "date",
+              "type": "Date",
+              "example": "2025-10-21",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "description",
+              "type": "String",
+              "example": "Annual checkup",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "visit-booking-screen",
+              "type": "INBOUND",
+              "title": "Visit Booking Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "visit-scheduled-event",
+              "type": "OUTBOUND",
+              "title": "Visit Scheduled",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Visit",
+          "apiEndpoint": "POST /owners/{ownerId}/pets/{petId}/visits/new",
+          "createsAggregate": true
+        }
+      ],
+      "events": [
+        {
+          "id": "visit-scheduled-event",
+          "title": "Visit Scheduled",
+          "type": "EVENT",
+          "description": "org.springframework.samples.petclinic.visit.VisitRepository.save - Visit persisted in visits table",
+          "fields": [
+            {
+              "name": "id",
+              "type": "Int",
+              "example": "5",
+              "optional": false,
+              "idAttribute": true,
+              "generated": true
+            },
+            {
+              "name": "petId",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "date",
+              "type": "Date",
+              "example": "2025-10-21",
+              "optional": false,
+              "idAttribute": false
+            },
+            {
+              "name": "description",
+              "type": "String",
+              "example": "Annual checkup",
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "schedule-visit-command",
+              "type": "INBOUND",
+              "title": "Schedule Visit",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Visit"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [
+        {
+          "id": "spec-visit-valid",
+          "title": "Valid visit scheduling succeeds",
+          "vertical": false,
+          "given": [
+            {
+              "id": "given-pet-exists",
+              "title": "Pet Registered",
+              "type": "SPEC_EVENT",
+              "linkedId": "pet-registered-event",
+              "fields": [
+                {"name": "id", "type": "Int"}
+              ],
+              "examples": [
+                {"id": 1}
+              ]
+            }
+          ],
+          "when": [
+            {
+              "id": "when-schedule-visit",
+              "title": "Schedule Visit",
+              "type": "SPEC_COMMAND",
+              "linkedId": "schedule-visit-command",
+              "fields": [
+                {"name": "petId", "type": "Int"},
+                {"name": "date", "type": "Date"},
+                {"name": "description", "type": "String"}
+              ],
+              "examples": [
+                {
+                  "petId": 1,
+                  "date": "2025-10-21",
+                  "description": "Annual checkup"
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-visit-scheduled",
+              "title": "Visit Scheduled",
+              "type": "SPEC_EVENT",
+              "linkedId": "visit-scheduled-event",
+              "fields": [
+                {"name": "id", "type": "Int"},
+                {"name": "description", "type": "String"}
+              ],
+              "examples": [
+                {
+                  "id": 5,
+                  "description": "Annual checkup"
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {"description": "Default date set to LocalDate.now() if not provided"}
+          ],
+          "linkedId": "visit-booking-submission"
+        },
+        {
+          "id": "spec-visit-missing-description",
+          "title": "Visit without description fails",
+          "vertical": false,
+          "given": [
+            {
+              "id": "given-pet-exists-2",
+              "title": "Pet Registered",
+              "type": "SPEC_EVENT",
+              "linkedId": "pet-registered-event",
+              "fields": [
+                {"name": "id", "type": "Int"}
+              ],
+              "examples": [
+                {"id": 1}
+              ]
+            }
+          ],
+          "when": [
+            {
+              "id": "when-schedule-visit-no-desc",
+              "title": "Schedule Visit",
+              "type": "SPEC_COMMAND",
+              "linkedId": "schedule-visit-command",
+              "fields": [
+                {"name": "description", "type": "String"}
+              ],
+              "examples": [
+                {"description": ""}
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-description-required",
+              "title": "Validation Error",
+              "type": "SPEC_ERROR",
+              "fields": [
+                {"name": "field", "type": "String"},
+                {"name": "error", "type": "String"}
+              ],
+              "examples": [
+                {
+                  "field": "description",
+                  "error": "must not be empty"
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {"description": "Visit.description is @NotEmpty"}
+          ],
+          "linkedId": "visit-booking-submission"
+        }
+      ],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Visit"]
+    },
+    {
+      "id": "veterinarian-directory-display",
+      "status": "Created",
+      "index": 18,
+      "title": "Display Veterinarian Directory",
+      "context": "Show available veterinarians with their specialties in HTML, JSON, or XML format",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "veterinarian-directory",
+          "title": "Veterinarian Directory",
+          "type": "READMODEL",
+          "description": "org.springframework.samples.petclinic.vet.VetController.showHtmlVetList / showJsonVetList / showXmlVetList",
+          "fields": [
+            {
+              "name": "veterinarians",
+              "type": "Custom",
+              "cardinality": "List",
+              "example": {
+                "id": 1,
+                "firstName": "James",
+                "lastName": "Carter",
+                "specialties": [
+                  {"id": 1, "name": "radiology"}
+                ]
+              },
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "veterinarians-loaded-event",
+              "type": "INBOUND",
+              "title": "Veterinarians Loaded",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "veterinarian-directory-screen",
+              "type": "OUTBOUND",
+              "title": "Veterinarian Directory Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Veterinarian"
+        }
+      ],
+      "screens": [
+        {
+          "id": "veterinarian-directory-screen",
+          "title": "Veterinarian Directory Screen",
+          "type": "SCREEN",
+          "description": "View: vets/vetList - Available in HTML, JSON, XML",
+          "fields": [
+            {
+              "name": "vets",
+              "type": "Custom",
+              "cardinality": "List",
+              "example": {
+                "id": 1,
+                "firstName": "James",
+                "lastName": "Carter",
+                "specialties": ["radiology"]
+              },
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "veterinarian-directory",
+              "type": "INBOUND",
+              "title": "Veterinarian Directory",
+              "elementType": "READMODEL"
+            }
+          ],
+          "aggregate": "Veterinarian",
+          "apiEndpoint": "GET /vets.html | /vets.json | /vets.xml"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        },
+        {
+          "name": "System",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Veterinarian"]
+    },
+    {
+      "id": "system-data-loading",
+      "status": "Created",
+      "index": 19,
+      "title": "Load System Reference Data",
+      "context": "Background loading of pet types and veterinarian information at system startup",
+      "sliceType": "AUTOMATION",
+      "commands": [
+        {
+          "id": "load-reference-data-command",
+          "title": "Load Reference Data",
+          "type": "COMMAND",
+          "description": "Database initialization loading pet types and veterinarians from data.sql",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "system-startup-processor",
+              "type": "INBOUND",
+              "title": "System Startup Processor",
+              "elementType": "AUTOMATION"
+            },
+            {
+              "id": "pet-types-loaded-event",
+              "type": "OUTBOUND",
+              "title": "Pet Types Loaded",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "veterinarians-loaded-event",
+              "type": "OUTBOUND",
+              "title": "Veterinarians Loaded",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "System"
+        }
+      ],
+      "events": [
+        {
+          "id": "pet-types-loaded-event",
+          "title": "Pet Types Loaded",
+          "type": "EVENT",
+          "description": "org.springframework.samples.petclinic.owner.PetRepository.findPetTypes - Pet types loaded from types table",
+          "fields": [
+            {
+              "name": "types",
+              "type": "Custom",
+              "cardinality": "List",
+              "example": {
+                "id": 1,
+                "name": "cat"
+              },
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "load-reference-data-command",
+              "type": "INBOUND",
+              "title": "Load Reference Data",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "System"
+        },
+        {
+          "id": "veterinarians-loaded-event",
+          "title": "Veterinarians Loaded",
+          "type": "EVENT",
+          "description": "org.springframework.samples.petclinic.vet.VetRepository.findAll - Veterinarians loaded from vets table (cached)",
+          "fields": [
+            {
+              "name": "veterinarians",
+              "type": "Custom",
+              "cardinality": "List",
+              "example": {
+                "id": 1,
+                "firstName": "James",
+                "lastName": "Carter",
+                "specialties": [
+                  {"id": 1, "name": "radiology"}
+                ]
+              },
+              "optional": false,
+              "idAttribute": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "load-reference-data-command",
+              "type": "INBOUND",
+              "title": "Load Reference Data",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "System"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [
+        {
+          "id": "system-startup-processor",
+          "title": "System Startup Processor",
+          "type": "AUTOMATION",
+          "description": "Spring Boot application initialization - loads reference data from database",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "load-reference-data-command",
+              "type": "OUTBOUND",
+              "title": "Load Reference Data",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "System"
+        }
+      ],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "System",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["System"]
+    }
+  ]
+}

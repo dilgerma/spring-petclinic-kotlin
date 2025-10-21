@@ -1,0 +1,988 @@
+{
+  "slices": [
+    {
+      "id": "owner-registration-form-display",
+      "status": "Created",
+      "index": 1,
+      "title": "Display Owner Registration Form",
+      "context": "Present form for registering a new pet owner with all required fields",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "owner-registration-form",
+          "title": "Owner Registration Form",
+          "type": "READMODEL",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "owner-registration-screen",
+              "type": "OUTBOUND",
+              "title": "Owner Registration Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Owner",
+          "context": "INTERNAL"
+        }
+      ],
+      "screens": [
+        {
+          "id": "owner-registration-screen",
+          "title": "Owner Registration Screen",
+          "type": "SCREEN",
+          "fields": [
+            {
+              "name": "firstName",
+              "type": "String",
+              "example": "Joe",
+              "optional": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "Bloggs",
+              "optional": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "address",
+              "type": "String",
+              "example": "123 Caramel Street",
+              "optional": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "city",
+              "type": "String",
+              "example": "London",
+              "optional": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "telephone",
+              "type": "String",
+              "example": "01316761638",
+              "optional": false,
+              "cardinality": "Single"
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-registration-form",
+              "type": "INBOUND",
+              "title": "Owner Registration Form",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "register-owner-command",
+              "type": "OUTBOUND",
+              "title": "Register Owner",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner",
+          "context": "INTERNAL",
+          "apiEndpoint": "/owners/new",
+          "description": "HTML form using Thymeleaf template with Bootstrap styling. Form ID: add-owner-form. Submit method: POST"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [
+        {
+          "id": "spec-display-owner-form",
+          "title": "Display empty registration form",
+          "given": [],
+          "when": [],
+          "then": [
+            {
+              "id": "then-owner-registration-form",
+              "title": "Owner Registration Form",
+              "type": "SPEC_READMODEL",
+              "linkedId": "owner-registration-form",
+              "fields": [],
+              "examples": [
+                {
+                  "firstName": "",
+                  "lastName": "",
+                  "address": "",
+                  "city": "",
+                  "telephone": ""
+                }
+              ]
+            }
+          ],
+          "linkedId": "owner-registration-form-display"
+        }
+      ],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-registration-submission",
+      "status": "Created",
+      "index": 2,
+      "title": "Register New Owner",
+      "context": "Process owner registration with validation and persistence",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "register-owner-command",
+          "title": "Register Owner",
+          "type": "COMMAND",
+          "fields": [
+            {
+              "name": "firstName",
+              "type": "String",
+              "example": "Joe",
+              "optional": false,
+              "technicalAttribute": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "Bloggs",
+              "optional": false,
+              "technicalAttribute": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "address",
+              "type": "String",
+              "example": "123 Caramel Street",
+              "optional": false,
+              "technicalAttribute": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "city",
+              "type": "String",
+              "example": "London",
+              "optional": false,
+              "technicalAttribute": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "telephone",
+              "type": "String",
+              "example": "01316761638",
+              "optional": false,
+              "technicalAttribute": false,
+              "cardinality": "Single"
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-registration-screen",
+              "type": "INBOUND",
+              "title": "Owner Registration Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "owner-registered-event",
+              "type": "OUTBOUND",
+              "title": "Owner Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "owner-registration-failed-event",
+              "type": "OUTBOUND",
+              "title": "Owner Registration Failed",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Owner",
+          "context": "INTERNAL",
+          "apiEndpoint": "/owners/new",
+          "createsAggregate": true,
+          "description": "Validates all required fields and telephone format. Returns validation errors if constraints violated."
+        }
+      ],
+      "events": [
+        {
+          "id": "owner-registered-event",
+          "title": "Owner Registered",
+          "type": "EVENT",
+          "fields": [
+            {
+              "name": "id",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": true,
+              "generated": true,
+              "technicalAttribute": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "firstName",
+              "type": "String",
+              "example": "Joe",
+              "optional": false,
+              "technicalAttribute": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "Bloggs",
+              "optional": false,
+              "technicalAttribute": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "address",
+              "type": "String",
+              "example": "123 Caramel Street",
+              "optional": false,
+              "technicalAttribute": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "city",
+              "type": "String",
+              "example": "London",
+              "optional": false,
+              "technicalAttribute": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "telephone",
+              "type": "String",
+              "example": "01316761638",
+              "optional": false,
+              "technicalAttribute": false,
+              "cardinality": "Single"
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "register-owner-command",
+              "type": "INBOUND",
+              "title": "Register Owner",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner",
+          "context": "INTERNAL",
+          "description": "Owner successfully registered with auto-generated ID"
+        },
+        {
+          "id": "owner-registration-failed-event",
+          "title": "Owner Registration Failed",
+          "type": "EVENT",
+          "fields": [
+            {
+              "name": "validationErrors",
+              "type": "Custom",
+              "example": {
+                "address": "must not be empty",
+                "telephone": "must not be empty"
+              },
+              "optional": false,
+              "technicalAttribute": false,
+              "cardinality": "Single"
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "register-owner-command",
+              "type": "INBOUND",
+              "title": "Register Owner",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner",
+          "context": "INTERNAL",
+          "description": "Owner registration failed due to validation constraint violations"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [
+        {
+          "id": "spec-register-owner-success",
+          "title": "Successfully register new owner with valid data",
+          "given": [],
+          "when": [
+            {
+              "id": "when-register-owner",
+              "title": "Register Owner",
+              "type": "SPEC_COMMAND",
+              "linkedId": "register-owner-command",
+              "fields": [
+                {
+                  "name": "firstName",
+                  "type": "String",
+                  "example": "Joe"
+                },
+                {
+                  "name": "lastName",
+                  "type": "String",
+                  "example": "Bloggs"
+                },
+                {
+                  "name": "address",
+                  "type": "String",
+                  "example": "123 Caramel Street"
+                },
+                {
+                  "name": "city",
+                  "type": "String",
+                  "example": "London"
+                },
+                {
+                  "name": "telephone",
+                  "type": "String",
+                  "example": "01316761638"
+                }
+              ],
+              "examples": [
+                {
+                  "firstName": "Joe",
+                  "lastName": "Bloggs",
+                  "address": "123 Caramel Street",
+                  "city": "London",
+                  "telephone": "01316761638"
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-owner-registered",
+              "title": "Owner Registered",
+              "type": "SPEC_EVENT",
+              "linkedId": "owner-registered-event",
+              "fields": [
+                {
+                  "name": "id",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "firstName",
+                  "type": "String",
+                  "example": "Joe"
+                },
+                {
+                  "name": "lastName",
+                  "type": "String",
+                  "example": "Bloggs"
+                },
+                {
+                  "name": "address",
+                  "type": "String",
+                  "example": "123 Caramel Street"
+                },
+                {
+                  "name": "city",
+                  "type": "String",
+                  "example": "London"
+                },
+                {
+                  "name": "telephone",
+                  "type": "String",
+                  "example": "01316761638"
+                }
+              ],
+              "examples": [
+                {
+                  "id": 1,
+                  "firstName": "Joe",
+                  "lastName": "Bloggs",
+                  "address": "123 Caramel Street",
+                  "city": "London",
+                  "telephone": "01316761638"
+                }
+              ]
+            }
+          ],
+          "linkedId": "owner-registration-submission",
+          "comments": [
+            {
+              "description": "Validation: firstName - @NotEmpty, lastName - @NotEmpty, address - @NotEmpty, city - @NotEmpty, telephone - @NotEmpty @Digits(fraction=0, integer=10)"
+            },
+            {
+              "description": "Business Rule: ID is auto-generated using IDENTITY strategy"
+            },
+            {
+              "description": "Test: testProcessCreationFormSuccess() in OwnerControllerTest.kt:77-86"
+            }
+          ]
+        },
+        {
+          "id": "spec-register-owner-missing-required-fields",
+          "title": "Fail registration when required fields are missing",
+          "given": [],
+          "when": [
+            {
+              "id": "when-register-owner-incomplete",
+              "title": "Register Owner",
+              "type": "SPEC_COMMAND",
+              "linkedId": "register-owner-command",
+              "fields": [
+                {
+                  "name": "firstName",
+                  "type": "String",
+                  "example": "Joe"
+                },
+                {
+                  "name": "lastName",
+                  "type": "String",
+                  "example": "Bloggs"
+                },
+                {
+                  "name": "city",
+                  "type": "String",
+                  "example": "London"
+                }
+              ],
+              "examples": [
+                {
+                  "firstName": "Joe",
+                  "lastName": "Bloggs",
+                  "city": "London"
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-registration-failed",
+              "title": "Owner Registration Failed",
+              "type": "SPEC_ERROR",
+              "linkedId": "owner-registration-failed-event",
+              "fields": [
+                {
+                  "name": "validationErrors",
+                  "type": "Custom",
+                  "example": {
+                    "address": "must not be empty",
+                    "telephone": "must not be empty"
+                  }
+                }
+              ],
+              "examples": [
+                {
+                  "validationErrors": {
+                    "address": "must not be empty",
+                    "telephone": "must not be empty"
+                  }
+                }
+              ]
+            }
+          ],
+          "linkedId": "owner-registration-submission",
+          "comments": [
+            {
+              "description": "Business Rule: All fields are mandatory - firstName, lastName, address, city, telephone"
+            },
+            {
+              "description": "Test: testProcessCreationFormHasErrors() in OwnerControllerTest.kt:89-100"
+            }
+          ]
+        },
+        {
+          "id": "spec-register-owner-invalid-telephone",
+          "title": "Fail registration when telephone format is invalid",
+          "given": [],
+          "when": [
+            {
+              "id": "when-register-owner-bad-phone",
+              "title": "Register Owner",
+              "type": "SPEC_COMMAND",
+              "linkedId": "register-owner-command",
+              "fields": [
+                {
+                  "name": "firstName",
+                  "type": "String",
+                  "example": "Joe"
+                },
+                {
+                  "name": "lastName",
+                  "type": "String",
+                  "example": "Bloggs"
+                },
+                {
+                  "name": "address",
+                  "type": "String",
+                  "example": "123 Caramel Street"
+                },
+                {
+                  "name": "city",
+                  "type": "String",
+                  "example": "London"
+                },
+                {
+                  "name": "telephone",
+                  "type": "String",
+                  "example": "12345678901"
+                }
+              ],
+              "examples": [
+                {
+                  "firstName": "Joe",
+                  "lastName": "Bloggs",
+                  "address": "123 Caramel Street",
+                  "city": "London",
+                  "telephone": "12345678901"
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-registration-failed-phone",
+              "title": "Owner Registration Failed",
+              "type": "SPEC_ERROR",
+              "linkedId": "owner-registration-failed-event",
+              "fields": [
+                {
+                  "name": "validationErrors",
+                  "type": "Custom",
+                  "example": {
+                    "telephone": "numeric value out of bounds (<10 digits>.<0 digits> expected)"
+                  }
+                }
+              ],
+              "examples": [
+                {
+                  "validationErrors": {
+                    "telephone": "numeric value out of bounds (<10 digits>.<0 digits> expected)"
+                  }
+                }
+              ]
+            }
+          ],
+          "linkedId": "owner-registration-submission",
+          "comments": [
+            {
+              "description": "Business Rule: Telephone must be numeric with maximum 10 digits, no decimal places allowed"
+            },
+            {
+              "description": "Validation: @Digits(fraction=0, integer=10) constraint on telephone field"
+            }
+          ]
+        },
+        {
+          "id": "spec-register-owner-empty-firstname",
+          "title": "Fail registration when firstName is empty",
+          "given": [],
+          "when": [
+            {
+              "id": "when-register-owner-no-firstname",
+              "title": "Register Owner",
+              "type": "SPEC_COMMAND",
+              "linkedId": "register-owner-command",
+              "fields": [
+                {
+                  "name": "firstName",
+                  "type": "String",
+                  "example": ""
+                },
+                {
+                  "name": "lastName",
+                  "type": "String",
+                  "example": "Bloggs"
+                },
+                {
+                  "name": "address",
+                  "type": "String",
+                  "example": "123 Caramel Street"
+                },
+                {
+                  "name": "city",
+                  "type": "String",
+                  "example": "London"
+                },
+                {
+                  "name": "telephone",
+                  "type": "String",
+                  "example": "01316761638"
+                }
+              ],
+              "examples": [
+                {
+                  "firstName": "",
+                  "lastName": "Bloggs",
+                  "address": "123 Caramel Street",
+                  "city": "London",
+                  "telephone": "01316761638"
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-registration-failed-firstname",
+              "title": "Owner Registration Failed",
+              "type": "SPEC_ERROR",
+              "linkedId": "owner-registration-failed-event",
+              "fields": [
+                {
+                  "name": "validationErrors",
+                  "type": "Custom",
+                  "example": {
+                    "firstName": "must not be empty"
+                  }
+                }
+              ],
+              "examples": [
+                {
+                  "validationErrors": {
+                    "firstName": "must not be empty"
+                  }
+                }
+              ]
+            }
+          ],
+          "linkedId": "owner-registration-submission",
+          "comments": [
+            {
+              "description": "Business Rule: First name is mandatory"
+            },
+            {
+              "description": "Test: shouldNotValidateWhenFirstNameEmpty() in ValidatorTests.kt (validates Person superclass)"
+            }
+          ]
+        }
+      ],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "owner-profile-display",
+      "status": "Created",
+      "index": 3,
+      "title": "Display Owner Profile",
+      "context": "Show newly registered owner details",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "owner-profile-data",
+          "title": "Owner Profile Data",
+          "type": "READMODEL",
+          "fields": [
+            {
+              "name": "id",
+              "type": "Int",
+              "example": "1",
+              "optional": false,
+              "idAttribute": true,
+              "cardinality": "Single"
+            },
+            {
+              "name": "firstName",
+              "type": "String",
+              "example": "George",
+              "optional": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "Franklin",
+              "optional": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "address",
+              "type": "String",
+              "example": "110 W. Liberty St.",
+              "optional": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "city",
+              "type": "String",
+              "example": "Madison",
+              "optional": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "telephone",
+              "type": "String",
+              "example": "6085551023",
+              "optional": false,
+              "cardinality": "Single"
+            },
+            {
+              "name": "pets",
+              "type": "Custom",
+              "example": [],
+              "optional": true,
+              "cardinality": "List",
+              "subfields": [
+                {
+                  "name": "id",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "Max"
+                },
+                {
+                  "name": "birthDate",
+                  "type": "Date",
+                  "example": "2020-01-15"
+                },
+                {
+                  "name": "type",
+                  "type": "String",
+                  "example": "dog"
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-registered-event",
+              "type": "INBOUND",
+              "title": "Owner Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "owner-profile-screen",
+              "type": "OUTBOUND",
+              "title": "Owner Profile Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Owner",
+          "context": "INTERNAL",
+          "description": "Displays owner details with empty pets list for newly registered owner"
+        }
+      ],
+      "screens": [
+        {
+          "id": "owner-profile-screen",
+          "title": "Owner Profile Screen",
+          "type": "SCREEN",
+          "fields": [
+            {
+              "name": "id",
+              "type": "Int",
+              "example": "1",
+              "cardinality": "Single"
+            },
+            {
+              "name": "firstName",
+              "type": "String",
+              "example": "George",
+              "cardinality": "Single"
+            },
+            {
+              "name": "lastName",
+              "type": "String",
+              "example": "Franklin",
+              "cardinality": "Single"
+            },
+            {
+              "name": "address",
+              "type": "String",
+              "example": "110 W. Liberty St.",
+              "cardinality": "Single"
+            },
+            {
+              "name": "city",
+              "type": "String",
+              "example": "Madison",
+              "cardinality": "Single"
+            },
+            {
+              "name": "telephone",
+              "type": "String",
+              "example": "6085551023",
+              "cardinality": "Single"
+            },
+            {
+              "name": "pets",
+              "type": "Custom",
+              "example": [],
+              "cardinality": "List"
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-profile-data",
+              "type": "INBOUND",
+              "title": "Owner Profile Data",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "edit-owner-command",
+              "type": "OUTBOUND",
+              "title": "Edit Owner",
+              "elementType": "COMMAND"
+            },
+            {
+              "id": "add-pet-command",
+              "type": "OUTBOUND",
+              "title": "Add Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Owner",
+          "context": "INTERNAL",
+          "apiEndpoint": "/owners/{ownerId}",
+          "description": "Owner details page showing all information with links to edit owner and add new pets"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [
+        {
+          "id": "spec-display-owner-profile",
+          "title": "Display newly registered owner profile",
+          "given": [
+            {
+              "id": "given-owner-registered",
+              "title": "Owner Registered",
+              "type": "SPEC_EVENT",
+              "linkedId": "owner-registered-event",
+              "fields": [
+                {
+                  "name": "id",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "firstName",
+                  "type": "String",
+                  "example": "George"
+                },
+                {
+                  "name": "lastName",
+                  "type": "String",
+                  "example": "Franklin"
+                },
+                {
+                  "name": "address",
+                  "type": "String",
+                  "example": "110 W. Liberty St."
+                },
+                {
+                  "name": "city",
+                  "type": "String",
+                  "example": "Madison"
+                },
+                {
+                  "name": "telephone",
+                  "type": "String",
+                  "example": "6085551023"
+                }
+              ],
+              "examples": [
+                {
+                  "id": 1,
+                  "firstName": "George",
+                  "lastName": "Franklin",
+                  "address": "110 W. Liberty St.",
+                  "city": "Madison",
+                  "telephone": "6085551023"
+                }
+              ]
+            }
+          ],
+          "when": [],
+          "then": [
+            {
+              "id": "then-owner-profile",
+              "title": "Owner Profile Data",
+              "type": "SPEC_READMODEL",
+              "linkedId": "owner-profile-data",
+              "fields": [
+                {
+                  "name": "id",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "firstName",
+                  "type": "String",
+                  "example": "George"
+                },
+                {
+                  "name": "lastName",
+                  "type": "String",
+                  "example": "Franklin"
+                },
+                {
+                  "name": "address",
+                  "type": "String",
+                  "example": "110 W. Liberty St."
+                },
+                {
+                  "name": "city",
+                  "type": "String",
+                  "example": "Madison"
+                },
+                {
+                  "name": "telephone",
+                  "type": "String",
+                  "example": "6085551023"
+                },
+                {
+                  "name": "pets",
+                  "type": "Custom",
+                  "example": []
+                }
+              ],
+              "examples": [
+                {
+                  "id": 1,
+                  "firstName": "George",
+                  "lastName": "Franklin",
+                  "address": "110 W. Liberty St.",
+                  "city": "Madison",
+                  "telephone": "6085551023",
+                  "pets": []
+                }
+              ]
+            }
+          ],
+          "linkedId": "owner-profile-display",
+          "comments": [
+            {
+              "description": "Test: testShowOwner() in OwnerControllerTest.kt:180-192"
+            },
+            {
+              "description": "Business Rule: Newly registered owner has no pets yet"
+            }
+          ]
+        }
+      ],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    }
+  ]
+}

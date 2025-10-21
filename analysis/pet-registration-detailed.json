@@ -1,0 +1,1844 @@
+{
+  "slices": [
+    {
+      "id": "pet-registration-form-display",
+      "status": "Created",
+      "index": 1,
+      "title": "Display Pet Registration Form",
+      "context": "Present form for registering a new pet to an existing owner with available pet types",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "pet-registration-form-data",
+          "title": "Pet Registration Form Data",
+          "type": "READMODEL",
+          "fields": [
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": "1",
+              "idAttribute": true,
+              "optional": false
+            },
+            {
+              "name": "ownerFirstName",
+              "type": "String",
+              "example": "George",
+              "optional": false
+            },
+            {
+              "name": "ownerLastName",
+              "type": "String",
+              "example": "Franklin",
+              "optional": false
+            },
+            {
+              "name": "availablePetTypes",
+              "type": "Custom",
+              "cardinality": "List",
+              "example": [
+                {
+                  "id": 1,
+                  "name": "cat"
+                },
+                {
+                  "id": 2,
+                  "name": "dog"
+                },
+                {
+                  "id": 6,
+                  "name": "hamster"
+                }
+              ],
+              "subfields": [
+                {
+                  "name": "id",
+                  "type": "Int",
+                  "example": "1",
+                  "idAttribute": true
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "cat"
+                }
+              ],
+              "optional": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "owner-registered-event",
+              "type": "INBOUND",
+              "title": "Owner Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "pet-types-loaded-event",
+              "type": "INBOUND",
+              "title": "Pet Types Loaded",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "pet-registration-screen",
+              "type": "OUTBOUND",
+              "title": "Pet Registration Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Pet",
+          "apiEndpoint": "/owners/{ownerId}/pets/new",
+          "description": "Provides owner information and available pet types for the registration form"
+        }
+      ],
+      "screens": [
+        {
+          "id": "pet-registration-screen",
+          "title": "Pet Registration Screen",
+          "type": "SCREEN",
+          "fields": [
+            {
+              "name": "ownerDisplay",
+              "type": "String",
+              "example": "George Franklin",
+              "optional": false,
+              "technicalAttribute": false
+            },
+            {
+              "name": "nameInput",
+              "type": "String",
+              "example": "Leo",
+              "optional": false
+            },
+            {
+              "name": "birthDateInput",
+              "type": "Date",
+              "example": "2015-02-12",
+              "optional": false
+            },
+            {
+              "name": "typeSelector",
+              "type": "Custom",
+              "example": {
+                "id": 1,
+                "name": "cat"
+              },
+              "optional": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "pet-registration-form-data",
+              "type": "INBOUND",
+              "title": "Pet Registration Form Data",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "register-pet-command",
+              "type": "OUTBOUND",
+              "title": "Register Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Pet",
+          "description": "Form displaying owner name (read-only), pet name input, birth date picker, and pet type dropdown"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [
+        {
+          "id": "spec-pet-registration-form-display-1",
+          "title": "Display registration form for existing owner with available pet types",
+          "given": [
+            {
+              "id": "given-owner-registered",
+              "title": "Owner Registered",
+              "type": "SPEC_EVENT",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "owner-registered-event",
+              "fields": [
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "firstName",
+                  "type": "String",
+                  "example": "George"
+                },
+                {
+                  "name": "lastName",
+                  "type": "String",
+                  "example": "Franklin"
+                }
+              ],
+              "examples": [
+                {
+                  "ownerId": 1,
+                  "firstName": "George",
+                  "lastName": "Franklin"
+                }
+              ]
+            },
+            {
+              "id": "given-pet-types-loaded",
+              "title": "Pet Types Loaded",
+              "type": "SPEC_EVENT",
+              "index": 1,
+              "specRow": 1,
+              "linkedId": "pet-types-loaded-event",
+              "fields": [
+                {
+                  "name": "petTypes",
+                  "type": "Custom",
+                  "cardinality": "List",
+                  "example": [
+                    {
+                      "id": 1,
+                      "name": "cat"
+                    },
+                    {
+                      "id": 2,
+                      "name": "dog"
+                    }
+                  ]
+                }
+              ],
+              "examples": [
+                {
+                  "petTypes": [
+                    {
+                      "id": 1,
+                      "name": "cat"
+                    },
+                    {
+                      "id": 2,
+                      "name": "dog"
+                    },
+                    {
+                      "id": 6,
+                      "name": "hamster"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "when": [],
+          "then": [
+            {
+              "id": "then-pet-registration-form",
+              "title": "Pet Registration Form Data",
+              "type": "SPEC_READMODEL",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "pet-registration-form-data",
+              "fields": [
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "ownerFirstName",
+                  "type": "String",
+                  "example": "George"
+                },
+                {
+                  "name": "ownerLastName",
+                  "type": "String",
+                  "example": "Franklin"
+                },
+                {
+                  "name": "availablePetTypes",
+                  "type": "Custom",
+                  "cardinality": "List",
+                  "example": [
+                    {
+                      "id": 1,
+                      "name": "cat"
+                    }
+                  ]
+                }
+              ],
+              "examples": [
+                {
+                  "ownerId": 1,
+                  "ownerFirstName": "George",
+                  "ownerLastName": "Franklin",
+                  "availablePetTypes": [
+                    {
+                      "id": 1,
+                      "name": "cat"
+                    },
+                    {
+                      "id": 2,
+                      "name": "dog"
+                    },
+                    {
+                      "id": 6,
+                      "name": "hamster"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "comments": [],
+          "linkedId": "pet-registration-form-display"
+        }
+      ],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet"]
+    },
+    {
+      "id": "pet-registration-submission",
+      "status": "Created",
+      "index": 2,
+      "title": "Register New Pet",
+      "context": "Process pet registration with validation (name required, type required, birth date required, duplicate name check)",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "register-pet-command",
+          "title": "Register Pet",
+          "type": "COMMAND",
+          "fields": [
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": "1",
+              "idAttribute": false,
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "String",
+              "example": "Betty",
+              "optional": false
+            },
+            {
+              "name": "birthDate",
+              "type": "Date",
+              "example": "2015-02-12",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "Custom",
+              "example": {
+                "id": 6,
+                "name": "hamster"
+              },
+              "subfields": [
+                {
+                  "name": "id",
+                  "type": "Int",
+                  "example": "6",
+                  "idAttribute": true
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "hamster"
+                }
+              ],
+              "optional": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "pet-registration-screen",
+              "type": "INBOUND",
+              "title": "Pet Registration Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "pet-registered-event",
+              "type": "OUTBOUND",
+              "title": "Pet Registered",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Pet",
+          "apiEndpoint": "/owners/{ownerId}/pets/new",
+          "createsAggregate": true,
+          "description": "Command to register a new pet for an owner with validation"
+        }
+      ],
+      "events": [
+        {
+          "id": "pet-registered-event",
+          "title": "Pet Registered",
+          "type": "EVENT",
+          "fields": [
+            {
+              "name": "petId",
+              "type": "Int",
+              "example": "14",
+              "idAttribute": true,
+              "generated": true,
+              "optional": false
+            },
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": "1",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "String",
+              "example": "Betty",
+              "optional": false
+            },
+            {
+              "name": "birthDate",
+              "type": "Date",
+              "example": "2015-02-12",
+              "optional": false
+            },
+            {
+              "name": "typeId",
+              "type": "Int",
+              "example": "6",
+              "optional": false
+            },
+            {
+              "name": "typeName",
+              "type": "String",
+              "example": "hamster",
+              "optional": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "register-pet-command",
+              "type": "INBOUND",
+              "title": "Register Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Pet",
+          "description": "Event indicating a new pet has been successfully registered"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [
+        {
+          "id": "spec-pet-registration-success",
+          "title": "Successfully register a new pet with valid data",
+          "given": [
+            {
+              "id": "given-owner-exists",
+              "title": "Owner Registered",
+              "type": "SPEC_EVENT",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "owner-registered-event",
+              "fields": [
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                }
+              ],
+              "examples": [
+                {
+                  "ownerId": 1
+                }
+              ]
+            }
+          ],
+          "when": [
+            {
+              "id": "when-register-pet",
+              "title": "Register Pet",
+              "type": "SPEC_COMMAND",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "register-pet-command",
+              "fields": [
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "Betty"
+                },
+                {
+                  "name": "birthDate",
+                  "type": "Date",
+                  "example": "2015-02-12"
+                },
+                {
+                  "name": "type",
+                  "type": "Custom",
+                  "example": {
+                    "id": 6,
+                    "name": "hamster"
+                  }
+                }
+              ],
+              "examples": [
+                {
+                  "ownerId": 1,
+                  "name": "Betty",
+                  "birthDate": "2015-02-12",
+                  "type": {
+                    "id": 6,
+                    "name": "hamster"
+                  }
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-pet-registered",
+              "title": "Pet Registered",
+              "type": "SPEC_EVENT",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "pet-registered-event",
+              "fields": [
+                {
+                  "name": "petId",
+                  "type": "Int",
+                  "example": "14"
+                },
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "Betty"
+                },
+                {
+                  "name": "birthDate",
+                  "type": "Date",
+                  "example": "2015-02-12"
+                },
+                {
+                  "name": "typeId",
+                  "type": "Int",
+                  "example": "6"
+                },
+                {
+                  "name": "typeName",
+                  "type": "String",
+                  "example": "hamster"
+                }
+              ],
+              "examples": [
+                {
+                  "petId": 14,
+                  "ownerId": 1,
+                  "name": "Betty",
+                  "birthDate": "2015-02-12",
+                  "typeId": 6,
+                  "typeName": "hamster"
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {
+              "description": "From PetControllerTest.testProcessCreationFormSuccess - validates successful pet creation with all required fields"
+            }
+          ],
+          "linkedId": "pet-registration-submission"
+        },
+        {
+          "id": "spec-pet-registration-missing-name",
+          "title": "Reject pet registration when name is missing",
+          "given": [
+            {
+              "id": "given-owner-exists-2",
+              "title": "Owner Registered",
+              "type": "SPEC_EVENT",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "owner-registered-event",
+              "fields": [
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                }
+              ],
+              "examples": [
+                {
+                  "ownerId": 1
+                }
+              ]
+            }
+          ],
+          "when": [
+            {
+              "id": "when-register-pet-no-name",
+              "title": "Register Pet",
+              "type": "SPEC_COMMAND",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "register-pet-command",
+              "fields": [
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "",
+                  "optional": true
+                },
+                {
+                  "name": "birthDate",
+                  "type": "Date",
+                  "example": "2015-02-12"
+                },
+                {
+                  "name": "type",
+                  "type": "Custom",
+                  "example": {
+                    "id": 6,
+                    "name": "hamster"
+                  }
+                }
+              ],
+              "examples": [
+                {
+                  "ownerId": 1,
+                  "name": "",
+                  "birthDate": "2015-02-12",
+                  "type": {
+                    "id": 6,
+                    "name": "hamster"
+                  }
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-validation-error-name",
+              "title": "Validation Error",
+              "type": "SPEC_ERROR",
+              "index": 0,
+              "specRow": 0,
+              "fields": [
+                {
+                  "name": "field",
+                  "type": "String",
+                  "example": "name"
+                },
+                {
+                  "name": "errorCode",
+                  "type": "String",
+                  "example": "required"
+                }
+              ],
+              "examples": [
+                {
+                  "field": "name",
+                  "errorCode": "required"
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {
+              "description": "From PetValidator - name field is required and must have length"
+            }
+          ],
+          "linkedId": "pet-registration-submission"
+        },
+        {
+          "id": "spec-pet-registration-missing-type",
+          "title": "Reject pet registration when type is missing",
+          "given": [
+            {
+              "id": "given-owner-exists-3",
+              "title": "Owner Registered",
+              "type": "SPEC_EVENT",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "owner-registered-event",
+              "fields": [
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                }
+              ],
+              "examples": [
+                {
+                  "ownerId": 1
+                }
+              ]
+            }
+          ],
+          "when": [
+            {
+              "id": "when-register-pet-no-type",
+              "title": "Register Pet",
+              "type": "SPEC_COMMAND",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "register-pet-command",
+              "fields": [
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "Betty"
+                },
+                {
+                  "name": "birthDate",
+                  "type": "Date",
+                  "example": "2015-02-12"
+                },
+                {
+                  "name": "type",
+                  "type": "Custom",
+                  "example": null,
+                  "optional": true
+                }
+              ],
+              "examples": [
+                {
+                  "ownerId": 1,
+                  "name": "Betty",
+                  "birthDate": "2015-02-12",
+                  "type": null
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-validation-error-type",
+              "title": "Validation Error",
+              "type": "SPEC_ERROR",
+              "index": 0,
+              "specRow": 0,
+              "fields": [
+                {
+                  "name": "field",
+                  "type": "String",
+                  "example": "type"
+                },
+                {
+                  "name": "errorCode",
+                  "type": "String",
+                  "example": "required"
+                }
+              ],
+              "examples": [
+                {
+                  "field": "type",
+                  "errorCode": "required"
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {
+              "description": "From PetValidator - type field is required for new pets"
+            },
+            {
+              "description": "From PetControllerTest.testProcessCreationFormHasErrors - validates error handling when type is missing"
+            }
+          ],
+          "linkedId": "pet-registration-submission"
+        },
+        {
+          "id": "spec-pet-registration-missing-birthdate",
+          "title": "Reject pet registration when birth date is missing",
+          "given": [
+            {
+              "id": "given-owner-exists-4",
+              "title": "Owner Registered",
+              "type": "SPEC_EVENT",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "owner-registered-event",
+              "fields": [
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                }
+              ],
+              "examples": [
+                {
+                  "ownerId": 1
+                }
+              ]
+            }
+          ],
+          "when": [
+            {
+              "id": "when-register-pet-no-birthdate",
+              "title": "Register Pet",
+              "type": "SPEC_COMMAND",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "register-pet-command",
+              "fields": [
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "Betty"
+                },
+                {
+                  "name": "birthDate",
+                  "type": "Date",
+                  "example": null,
+                  "optional": true
+                },
+                {
+                  "name": "type",
+                  "type": "Custom",
+                  "example": {
+                    "id": 6,
+                    "name": "hamster"
+                  }
+                }
+              ],
+              "examples": [
+                {
+                  "ownerId": 1,
+                  "name": "Betty",
+                  "birthDate": null,
+                  "type": {
+                    "id": 6,
+                    "name": "hamster"
+                  }
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-validation-error-birthdate",
+              "title": "Validation Error",
+              "type": "SPEC_ERROR",
+              "index": 0,
+              "specRow": 0,
+              "fields": [
+                {
+                  "name": "field",
+                  "type": "String",
+                  "example": "birthDate"
+                },
+                {
+                  "name": "errorCode",
+                  "type": "String",
+                  "example": "required"
+                }
+              ],
+              "examples": [
+                {
+                  "field": "birthDate",
+                  "errorCode": "required"
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {
+              "description": "From PetValidator - birthDate field is required"
+            }
+          ],
+          "linkedId": "pet-registration-submission"
+        },
+        {
+          "id": "spec-pet-registration-duplicate-name",
+          "title": "Reject pet registration when pet name already exists for this owner",
+          "given": [
+            {
+              "id": "given-owner-exists-5",
+              "title": "Owner Registered",
+              "type": "SPEC_EVENT",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "owner-registered-event",
+              "fields": [
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                }
+              ],
+              "examples": [
+                {
+                  "ownerId": 1
+                }
+              ]
+            },
+            {
+              "id": "given-pet-already-registered",
+              "title": "Pet Registered",
+              "type": "SPEC_EVENT",
+              "index": 1,
+              "specRow": 1,
+              "linkedId": "pet-registered-event",
+              "fields": [
+                {
+                  "name": "petId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "Leo"
+                }
+              ],
+              "examples": [
+                {
+                  "petId": 1,
+                  "ownerId": 1,
+                  "name": "Leo"
+                }
+              ]
+            }
+          ],
+          "when": [
+            {
+              "id": "when-register-pet-duplicate",
+              "title": "Register Pet",
+              "type": "SPEC_COMMAND",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "register-pet-command",
+              "fields": [
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "Leo"
+                },
+                {
+                  "name": "birthDate",
+                  "type": "Date",
+                  "example": "2020-01-15"
+                },
+                {
+                  "name": "type",
+                  "type": "Custom",
+                  "example": {
+                    "id": 1,
+                    "name": "cat"
+                  }
+                }
+              ],
+              "examples": [
+                {
+                  "ownerId": 1,
+                  "name": "Leo",
+                  "birthDate": "2020-01-15",
+                  "type": {
+                    "id": 1,
+                    "name": "cat"
+                  }
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-duplicate-error",
+              "title": "Validation Error",
+              "type": "SPEC_ERROR",
+              "index": 0,
+              "specRow": 0,
+              "fields": [
+                {
+                  "name": "field",
+                  "type": "String",
+                  "example": "name"
+                },
+                {
+                  "name": "errorCode",
+                  "type": "String",
+                  "example": "duplicate"
+                },
+                {
+                  "name": "errorMessage",
+                  "type": "String",
+                  "example": "already exists"
+                }
+              ],
+              "examples": [
+                {
+                  "field": "name",
+                  "errorCode": "duplicate",
+                  "errorMessage": "already exists"
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {
+              "description": "From PetController.processCreationForm - duplicate name check validates pet name uniqueness per owner (case-insensitive)"
+            }
+          ],
+          "linkedId": "pet-registration-submission"
+        }
+      ],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet"]
+    },
+    {
+      "id": "pet-update-form-display",
+      "status": "Created",
+      "index": 3,
+      "title": "Display Pet Update Form",
+      "context": "Present form for editing existing pet information with current values pre-populated",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "pet-update-form",
+          "title": "Pet Update Form",
+          "type": "READMODEL",
+          "fields": [
+            {
+              "name": "petId",
+              "type": "Int",
+              "example": "1",
+              "idAttribute": true,
+              "optional": false
+            },
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": "1",
+              "optional": false
+            },
+            {
+              "name": "ownerFirstName",
+              "type": "String",
+              "example": "George",
+              "optional": false
+            },
+            {
+              "name": "ownerLastName",
+              "type": "String",
+              "example": "Franklin",
+              "optional": false
+            },
+            {
+              "name": "currentName",
+              "type": "String",
+              "example": "Leo",
+              "optional": false
+            },
+            {
+              "name": "currentBirthDate",
+              "type": "Date",
+              "example": "2010-09-07",
+              "optional": false
+            },
+            {
+              "name": "currentType",
+              "type": "Custom",
+              "example": {
+                "id": 1,
+                "name": "cat"
+              },
+              "subfields": [
+                {
+                  "name": "id",
+                  "type": "Int",
+                  "example": "1",
+                  "idAttribute": true
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "cat"
+                }
+              ],
+              "optional": false
+            },
+            {
+              "name": "availablePetTypes",
+              "type": "Custom",
+              "cardinality": "List",
+              "example": [
+                {
+                  "id": 1,
+                  "name": "cat"
+                },
+                {
+                  "id": 2,
+                  "name": "dog"
+                }
+              ],
+              "subfields": [
+                {
+                  "name": "id",
+                  "type": "Int",
+                  "example": "1",
+                  "idAttribute": true
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "cat"
+                }
+              ],
+              "optional": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "pet-registered-event",
+              "type": "INBOUND",
+              "title": "Pet Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "pet-types-loaded-event",
+              "type": "INBOUND",
+              "title": "Pet Types Loaded",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "pet-update-screen",
+              "type": "OUTBOUND",
+              "title": "Pet Update Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Pet",
+          "apiEndpoint": "/owners/{ownerId}/pets/{petId}/edit",
+          "description": "Provides current pet data and available types for the update form"
+        }
+      ],
+      "screens": [
+        {
+          "id": "pet-update-screen",
+          "title": "Pet Update Screen",
+          "type": "SCREEN",
+          "fields": [
+            {
+              "name": "petId",
+              "type": "Int",
+              "example": "1",
+              "technicalAttribute": true
+            },
+            {
+              "name": "ownerDisplay",
+              "type": "String",
+              "example": "George Franklin",
+              "optional": false
+            },
+            {
+              "name": "nameInput",
+              "type": "String",
+              "example": "Leo",
+              "optional": false
+            },
+            {
+              "name": "birthDateInput",
+              "type": "Date",
+              "example": "2010-09-07",
+              "optional": false
+            },
+            {
+              "name": "typeSelector",
+              "type": "Custom",
+              "example": {
+                "id": 1,
+                "name": "cat"
+              },
+              "optional": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "pet-update-form",
+              "type": "INBOUND",
+              "title": "Pet Update Form",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "update-pet-command",
+              "type": "OUTBOUND",
+              "title": "Update Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Pet",
+          "description": "Form displaying owner name (read-only), pet name input, birth date picker, and pet type dropdown with current values pre-filled"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [
+        {
+          "id": "spec-pet-update-form-display-1",
+          "title": "Display update form with current pet data and available types",
+          "given": [
+            {
+              "id": "given-pet-registered-for-update",
+              "title": "Pet Registered",
+              "type": "SPEC_EVENT",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "pet-registered-event",
+              "fields": [
+                {
+                  "name": "petId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "Leo"
+                },
+                {
+                  "name": "birthDate",
+                  "type": "Date",
+                  "example": "2010-09-07"
+                },
+                {
+                  "name": "typeId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "typeName",
+                  "type": "String",
+                  "example": "cat"
+                }
+              ],
+              "examples": [
+                {
+                  "petId": 1,
+                  "ownerId": 1,
+                  "name": "Leo",
+                  "birthDate": "2010-09-07",
+                  "typeId": 1,
+                  "typeName": "cat"
+                }
+              ]
+            },
+            {
+              "id": "given-pet-types-available",
+              "title": "Pet Types Loaded",
+              "type": "SPEC_EVENT",
+              "index": 1,
+              "specRow": 1,
+              "linkedId": "pet-types-loaded-event",
+              "fields": [
+                {
+                  "name": "petTypes",
+                  "type": "Custom",
+                  "cardinality": "List",
+                  "example": [
+                    {
+                      "id": 1,
+                      "name": "cat"
+                    }
+                  ]
+                }
+              ],
+              "examples": [
+                {
+                  "petTypes": [
+                    {
+                      "id": 1,
+                      "name": "cat"
+                    },
+                    {
+                      "id": 2,
+                      "name": "dog"
+                    },
+                    {
+                      "id": 6,
+                      "name": "hamster"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "when": [],
+          "then": [
+            {
+              "id": "then-pet-update-form-data",
+              "title": "Pet Update Form",
+              "type": "SPEC_READMODEL",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "pet-update-form",
+              "fields": [
+                {
+                  "name": "petId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "currentName",
+                  "type": "String",
+                  "example": "Leo"
+                },
+                {
+                  "name": "currentBirthDate",
+                  "type": "Date",
+                  "example": "2010-09-07"
+                },
+                {
+                  "name": "currentType",
+                  "type": "Custom",
+                  "example": {
+                    "id": 1,
+                    "name": "cat"
+                  }
+                },
+                {
+                  "name": "availablePetTypes",
+                  "type": "Custom",
+                  "cardinality": "List",
+                  "example": [
+                    {
+                      "id": 1,
+                      "name": "cat"
+                    }
+                  ]
+                }
+              ],
+              "examples": [
+                {
+                  "petId": 1,
+                  "ownerId": 1,
+                  "currentName": "Leo",
+                  "currentBirthDate": "2010-09-07",
+                  "currentType": {
+                    "id": 1,
+                    "name": "cat"
+                  },
+                  "availablePetTypes": [
+                    {
+                      "id": 1,
+                      "name": "cat"
+                    },
+                    {
+                      "id": 2,
+                      "name": "dog"
+                    },
+                    {
+                      "id": 6,
+                      "name": "hamster"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {
+              "description": "From PetControllerTest.testInitUpdateForm - validates form initialization with existing pet data"
+            }
+          ],
+          "linkedId": "pet-update-form-display"
+        }
+      ],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet"]
+    },
+    {
+      "id": "pet-update-submission",
+      "status": "Created",
+      "index": 4,
+      "title": "Update Pet Information",
+      "context": "Process pet information updates with validation (name required, type required, birth date required)",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "update-pet-command",
+          "title": "Update Pet",
+          "type": "COMMAND",
+          "fields": [
+            {
+              "name": "petId",
+              "type": "Int",
+              "example": "1",
+              "idAttribute": true,
+              "optional": false
+            },
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": "1",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "String",
+              "example": "Betty",
+              "optional": false
+            },
+            {
+              "name": "birthDate",
+              "type": "Date",
+              "example": "2015-02-12",
+              "optional": false
+            },
+            {
+              "name": "type",
+              "type": "Custom",
+              "example": {
+                "id": 6,
+                "name": "hamster"
+              },
+              "subfields": [
+                {
+                  "name": "id",
+                  "type": "Int",
+                  "example": "6",
+                  "idAttribute": true
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "hamster"
+                }
+              ],
+              "optional": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "pet-update-screen",
+              "type": "INBOUND",
+              "title": "Pet Update Screen",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "pet-updated-event",
+              "type": "OUTBOUND",
+              "title": "Pet Updated",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Pet",
+          "apiEndpoint": "/owners/{ownerId}/pets/{petId}/edit",
+          "createsAggregate": false,
+          "description": "Command to update existing pet information with validation"
+        }
+      ],
+      "events": [
+        {
+          "id": "pet-updated-event",
+          "title": "Pet Updated",
+          "type": "EVENT",
+          "fields": [
+            {
+              "name": "petId",
+              "type": "Int",
+              "example": "1",
+              "idAttribute": true,
+              "optional": false
+            },
+            {
+              "name": "ownerId",
+              "type": "Int",
+              "example": "1",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "String",
+              "example": "Betty",
+              "optional": false
+            },
+            {
+              "name": "birthDate",
+              "type": "Date",
+              "example": "2015-02-12",
+              "optional": false
+            },
+            {
+              "name": "typeId",
+              "type": "Int",
+              "example": "6",
+              "optional": false
+            },
+            {
+              "name": "typeName",
+              "type": "String",
+              "example": "hamster",
+              "optional": false
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "update-pet-command",
+              "type": "INBOUND",
+              "title": "Update Pet",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Pet",
+          "description": "Event indicating pet information has been successfully updated"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [
+        {
+          "id": "spec-pet-update-success",
+          "title": "Successfully update pet with valid data",
+          "given": [
+            {
+              "id": "given-existing-pet",
+              "title": "Pet Registered",
+              "type": "SPEC_EVENT",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "pet-registered-event",
+              "fields": [
+                {
+                  "name": "petId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "Leo"
+                },
+                {
+                  "name": "birthDate",
+                  "type": "Date",
+                  "example": "2010-09-07"
+                },
+                {
+                  "name": "typeId",
+                  "type": "Int",
+                  "example": "1"
+                }
+              ],
+              "examples": [
+                {
+                  "petId": 1,
+                  "ownerId": 1,
+                  "name": "Leo",
+                  "birthDate": "2010-09-07",
+                  "typeId": 1
+                }
+              ]
+            }
+          ],
+          "when": [
+            {
+              "id": "when-update-pet",
+              "title": "Update Pet",
+              "type": "SPEC_COMMAND",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "update-pet-command",
+              "fields": [
+                {
+                  "name": "petId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "Betty"
+                },
+                {
+                  "name": "birthDate",
+                  "type": "Date",
+                  "example": "2015-02-12"
+                },
+                {
+                  "name": "type",
+                  "type": "Custom",
+                  "example": {
+                    "id": 6,
+                    "name": "hamster"
+                  }
+                }
+              ],
+              "examples": [
+                {
+                  "petId": 1,
+                  "ownerId": 1,
+                  "name": "Betty",
+                  "birthDate": "2015-02-12",
+                  "type": {
+                    "id": 6,
+                    "name": "hamster"
+                  }
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-pet-updated",
+              "title": "Pet Updated",
+              "type": "SPEC_EVENT",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "pet-updated-event",
+              "fields": [
+                {
+                  "name": "petId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "Betty"
+                },
+                {
+                  "name": "birthDate",
+                  "type": "Date",
+                  "example": "2015-02-12"
+                },
+                {
+                  "name": "typeId",
+                  "type": "Int",
+                  "example": "6"
+                },
+                {
+                  "name": "typeName",
+                  "type": "String",
+                  "example": "hamster"
+                }
+              ],
+              "examples": [
+                {
+                  "petId": 1,
+                  "ownerId": 1,
+                  "name": "Betty",
+                  "birthDate": "2015-02-12",
+                  "typeId": 6,
+                  "typeName": "hamster"
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {
+              "description": "From PetControllerTest.testProcessUpdateFormSuccess - validates successful pet update with all required fields"
+            }
+          ],
+          "linkedId": "pet-update-submission"
+        },
+        {
+          "id": "spec-pet-update-missing-type",
+          "title": "Reject pet update when type is missing",
+          "given": [
+            {
+              "id": "given-existing-pet-2",
+              "title": "Pet Registered",
+              "type": "SPEC_EVENT",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "pet-registered-event",
+              "fields": [
+                {
+                  "name": "petId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                }
+              ],
+              "examples": [
+                {
+                  "petId": 1,
+                  "ownerId": 1
+                }
+              ]
+            }
+          ],
+          "when": [
+            {
+              "id": "when-update-pet-no-type",
+              "title": "Update Pet",
+              "type": "SPEC_COMMAND",
+              "index": 0,
+              "specRow": 0,
+              "linkedId": "update-pet-command",
+              "fields": [
+                {
+                  "name": "petId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "ownerId",
+                  "type": "Int",
+                  "example": "1"
+                },
+                {
+                  "name": "name",
+                  "type": "String",
+                  "example": "Betty"
+                },
+                {
+                  "name": "birthDate",
+                  "type": "Date",
+                  "example": "2015-02-12"
+                },
+                {
+                  "name": "type",
+                  "type": "Custom",
+                  "example": null,
+                  "optional": true
+                }
+              ],
+              "examples": [
+                {
+                  "petId": 1,
+                  "ownerId": 1,
+                  "name": "Betty",
+                  "birthDate": "2015-02-12",
+                  "type": null
+                }
+              ]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-validation-error-type-update",
+              "title": "Validation Error",
+              "type": "SPEC_ERROR",
+              "index": 0,
+              "specRow": 0,
+              "fields": [
+                {
+                  "name": "field",
+                  "type": "String",
+                  "example": "type"
+                },
+                {
+                  "name": "errorCode",
+                  "type": "String",
+                  "example": "required"
+                }
+              ],
+              "examples": [
+                {
+                  "field": "type",
+                  "errorCode": "required"
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {
+              "description": "From PetControllerTest.testProcessUpdateFormHasErrors - validates error handling when type is missing during update"
+            }
+          ],
+          "linkedId": "pet-update-submission"
+        }
+      ],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet"]
+    }
+  ]
+}

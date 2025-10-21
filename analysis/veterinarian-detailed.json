@@ -1,0 +1,903 @@
+{
+  "slices": [
+    {
+      "id": "veterinarian-directory-display",
+      "status": "Created",
+      "index": 1,
+      "title": "Display Veterinarian Directory",
+      "context": "Show complete directory of all veterinarians with their specialties in multiple formats (HTML, JSON, XML)",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "veterinarian-directory",
+          "title": "Veterinarian Directory",
+          "type": "READMODEL",
+          "description": "org.springframework.samples.petclinic.vet.Vets",
+          "fields": [
+            {
+              "name": "vetList",
+              "type": "Custom",
+              "cardinality": "List",
+              "example": [
+                {
+                  "id": 1,
+                  "firstName": "James",
+                  "lastName": "Carter",
+                  "specialties": []
+                },
+                {
+                  "id": 2,
+                  "firstName": "Helen",
+                  "lastName": "Leary",
+                  "specialties": [
+                    {
+                      "id": 1,
+                      "name": "radiology"
+                    }
+                  ]
+                },
+                {
+                  "id": 3,
+                  "firstName": "Linda",
+                  "lastName": "Douglas",
+                  "specialties": [
+                    {
+                      "id": 2,
+                      "name": "surgery"
+                    },
+                    {
+                      "id": 3,
+                      "name": "dentistry"
+                    }
+                  ]
+                }
+              ],
+              "optional": false,
+              "subfields": [
+                {
+                  "name": "id",
+                  "type": "Int",
+                  "example": "1",
+                  "optional": false,
+                  "idAttribute": true
+                },
+                {
+                  "name": "firstName",
+                  "type": "String",
+                  "example": "James",
+                  "optional": false
+                },
+                {
+                  "name": "lastName",
+                  "type": "String",
+                  "example": "Carter",
+                  "optional": false
+                },
+                {
+                  "name": "specialties",
+                  "type": "Custom",
+                  "cardinality": "List",
+                  "example": [
+                    {
+                      "id": 1,
+                      "name": "radiology"
+                    }
+                  ],
+                  "optional": false,
+                  "subfields": [
+                    {
+                      "name": "id",
+                      "type": "Int",
+                      "example": "1",
+                      "optional": false,
+                      "idAttribute": true
+                    },
+                    {
+                      "name": "name",
+                      "type": "String",
+                      "example": "radiology",
+                      "optional": false
+                    }
+                  ]
+                },
+                {
+                  "name": "nrOfSpecialties",
+                  "type": "Int",
+                  "example": "2",
+                  "optional": false,
+                  "technicalAttribute": true,
+                  "generated": true
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "veterinarians-loaded-event",
+              "type": "INBOUND",
+              "title": "Veterinarians Loaded",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "veterinarian-directory-screen",
+              "type": "OUTBOUND",
+              "title": "Veterinarian Directory Screen",
+              "elementType": "SCREEN"
+            }
+          ],
+          "aggregate": "Veterinarian",
+          "service": "org.springframework.samples.petclinic.vet.VetRepository"
+        }
+      ],
+      "screens": [
+        {
+          "id": "veterinarian-directory-screen",
+          "title": "Veterinarian Directory Screen",
+          "type": "SCREEN",
+          "description": "templates/vets/vetList.html, /vets.html, /vets.json, /vets.xml",
+          "fields": [
+            {
+              "name": "displayFormat",
+              "type": "String",
+              "example": "HTML",
+              "optional": false
+            },
+            {
+              "name": "veterinarians",
+              "type": "Custom",
+              "cardinality": "List",
+              "example": [
+                {
+                  "fullName": "James Carter",
+                  "specialties": "none"
+                },
+                {
+                  "fullName": "Helen Leary",
+                  "specialties": "radiology"
+                },
+                {
+                  "fullName": "Linda Douglas",
+                  "specialties": "dentistry surgery"
+                }
+              ],
+              "optional": false,
+              "subfields": [
+                {
+                  "name": "fullName",
+                  "type": "String",
+                  "example": "Helen Leary",
+                  "optional": false,
+                  "generated": true
+                },
+                {
+                  "name": "specialties",
+                  "type": "String",
+                  "example": "radiology surgery",
+                  "optional": false
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "veterinarian-directory",
+              "type": "INBOUND",
+              "title": "Veterinarian Directory",
+              "elementType": "READMODEL"
+            }
+          ],
+          "aggregate": "Veterinarian",
+          "apiEndpoint": "/vets.html, /vets.json, /vets.xml"
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [
+        {
+          "id": "vets-table",
+          "title": "vets",
+          "fields": [
+            {
+              "name": "id",
+              "type": "Int",
+              "example": "1",
+              "idAttribute": true
+            },
+            {
+              "name": "first_name",
+              "type": "String",
+              "example": "James"
+            },
+            {
+              "name": "last_name",
+              "type": "String",
+              "example": "Carter"
+            }
+          ]
+        },
+        {
+          "id": "specialties-table",
+          "title": "specialties",
+          "fields": [
+            {
+              "name": "id",
+              "type": "Int",
+              "example": "1",
+              "idAttribute": true
+            },
+            {
+              "name": "name",
+              "type": "String",
+              "example": "radiology"
+            }
+          ]
+        },
+        {
+          "id": "vet-specialties-table",
+          "title": "vet_specialties",
+          "fields": [
+            {
+              "name": "vet_id",
+              "type": "Int",
+              "example": "2",
+              "idAttribute": true
+            },
+            {
+              "name": "specialty_id",
+              "type": "Int",
+              "example": "1",
+              "idAttribute": true
+            }
+          ]
+        }
+      ],
+      "specifications": [
+        {
+          "id": "spec-vet-list-html",
+          "title": "Display veterinarians in HTML format",
+          "vertical": false,
+          "sliceName": "Display Veterinarian Directory",
+          "given": [
+            {
+              "id": "given-vets-exist",
+              "title": "Veterinarians Loaded",
+              "type": "SPEC_EVENT",
+              "index": 1,
+              "specRow": 1,
+              "linkedId": "veterinarians-loaded-event",
+              "fields": [
+                {
+                  "name": "vetList",
+                  "type": "Custom",
+                  "cardinality": "List",
+                  "example": [
+                    {
+                      "id": 1,
+                      "firstName": "James",
+                      "lastName": "Carter",
+                      "specialties": []
+                    },
+                    {
+                      "id": 2,
+                      "firstName": "Helen",
+                      "lastName": "Leary",
+                      "specialties": [
+                        {
+                          "id": 1,
+                          "name": "radiology"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "examples": [
+                {
+                  "vetList": [
+                    {
+                      "id": 1,
+                      "firstName": "James",
+                      "lastName": "Carter",
+                      "specialties": []
+                    },
+                    {
+                      "id": 2,
+                      "firstName": "Helen",
+                      "lastName": "Leary",
+                      "specialties": [
+                        {
+                          "id": 1,
+                          "name": "radiology"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "when": [],
+          "then": [
+            {
+              "id": "then-vet-directory",
+              "title": "Veterinarian Directory",
+              "type": "SPEC_READMODEL",
+              "index": 1,
+              "specRow": 1,
+              "linkedId": "veterinarian-directory",
+              "fields": [
+                {
+                  "name": "vetList",
+                  "type": "Custom",
+                  "cardinality": "List",
+                  "example": [
+                    {
+                      "id": 1,
+                      "firstName": "James",
+                      "lastName": "Carter",
+                      "specialties": [],
+                      "nrOfSpecialties": 0
+                    },
+                    {
+                      "id": 2,
+                      "firstName": "Helen",
+                      "lastName": "Leary",
+                      "specialties": [
+                        {
+                          "id": 1,
+                          "name": "radiology"
+                        }
+                      ],
+                      "nrOfSpecialties": 1
+                    }
+                  ]
+                }
+              ],
+              "examples": [
+                {
+                  "vetList": [
+                    {
+                      "id": 1,
+                      "firstName": "James",
+                      "lastName": "Carter",
+                      "specialties": [],
+                      "nrOfSpecialties": 0
+                    },
+                    {
+                      "id": 2,
+                      "firstName": "Helen",
+                      "lastName": "Leary",
+                      "specialties": [
+                        {
+                          "id": 1,
+                          "name": "radiology"
+                        }
+                      ],
+                      "nrOfSpecialties": 1
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {
+              "description": "The veterinarian list is cached using Spring's @Cacheable annotation for performance"
+            }
+          ],
+          "linkedId": "veterinarian-directory-display"
+        },
+        {
+          "id": "spec-vet-with-multiple-specialties",
+          "title": "Display veterinarian with multiple specialties sorted alphabetically",
+          "vertical": false,
+          "sliceName": "Display Veterinarian Directory",
+          "given": [
+            {
+              "id": "given-vet-multiple-specialties",
+              "title": "Veterinarians Loaded",
+              "type": "SPEC_EVENT",
+              "index": 1,
+              "specRow": 1,
+              "linkedId": "veterinarians-loaded-event",
+              "fields": [
+                {
+                  "name": "vetList",
+                  "type": "Custom",
+                  "cardinality": "List",
+                  "example": [
+                    {
+                      "id": 3,
+                      "firstName": "Linda",
+                      "lastName": "Douglas",
+                      "specialties": [
+                        {
+                          "id": 3,
+                          "name": "dentistry"
+                        },
+                        {
+                          "id": 2,
+                          "name": "surgery"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "examples": [
+                {
+                  "vetList": [
+                    {
+                      "id": 3,
+                      "firstName": "Linda",
+                      "lastName": "Douglas",
+                      "specialties": [
+                        {
+                          "id": 3,
+                          "name": "dentistry"
+                        },
+                        {
+                          "id": 2,
+                          "name": "surgery"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "when": [],
+          "then": [
+            {
+              "id": "then-sorted-specialties",
+              "title": "Veterinarian Directory",
+              "type": "SPEC_READMODEL",
+              "index": 1,
+              "specRow": 1,
+              "linkedId": "veterinarian-directory",
+              "fields": [
+                {
+                  "name": "vetList",
+                  "type": "Custom",
+                  "cardinality": "List",
+                  "example": [
+                    {
+                      "id": 3,
+                      "firstName": "Linda",
+                      "lastName": "Douglas",
+                      "specialties": [
+                        {
+                          "id": 3,
+                          "name": "dentistry"
+                        },
+                        {
+                          "id": 2,
+                          "name": "surgery"
+                        }
+                      ],
+                      "nrOfSpecialties": 2
+                    }
+                  ]
+                }
+              ],
+              "examples": [
+                {
+                  "vetList": [
+                    {
+                      "id": 3,
+                      "firstName": "Linda",
+                      "lastName": "Douglas",
+                      "specialties": [
+                        {
+                          "id": 3,
+                          "name": "dentistry"
+                        },
+                        {
+                          "id": 2,
+                          "name": "surgery"
+                        }
+                      ],
+                      "nrOfSpecialties": 2
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {
+              "description": "Specialties are automatically sorted alphabetically by name when retrieved from Vet.getSpecialties()"
+            }
+          ],
+          "linkedId": "veterinarian-directory-display"
+        },
+        {
+          "id": "spec-vet-no-specialties",
+          "title": "Display veterinarian with no specialties shows 'none'",
+          "vertical": false,
+          "sliceName": "Display Veterinarian Directory",
+          "given": [
+            {
+              "id": "given-vet-no-specialties",
+              "title": "Veterinarians Loaded",
+              "type": "SPEC_EVENT",
+              "index": 1,
+              "specRow": 1,
+              "linkedId": "veterinarians-loaded-event",
+              "fields": [
+                {
+                  "name": "vetList",
+                  "type": "Custom",
+                  "cardinality": "List",
+                  "example": [
+                    {
+                      "id": 1,
+                      "firstName": "James",
+                      "lastName": "Carter",
+                      "specialties": []
+                    }
+                  ]
+                }
+              ],
+              "examples": [
+                {
+                  "vetList": [
+                    {
+                      "id": 1,
+                      "firstName": "James",
+                      "lastName": "Carter",
+                      "specialties": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "when": [],
+          "then": [
+            {
+              "id": "then-no-specialties",
+              "title": "Veterinarian Directory",
+              "type": "SPEC_READMODEL",
+              "index": 1,
+              "specRow": 1,
+              "linkedId": "veterinarian-directory",
+              "fields": [
+                {
+                  "name": "vetList",
+                  "type": "Custom",
+                  "cardinality": "List",
+                  "example": [
+                    {
+                      "id": 1,
+                      "firstName": "James",
+                      "lastName": "Carter",
+                      "specialties": [],
+                      "nrOfSpecialties": 0
+                    }
+                  ]
+                }
+              ],
+              "examples": [
+                {
+                  "vetList": [
+                    {
+                      "id": 1,
+                      "firstName": "James",
+                      "lastName": "Carter",
+                      "specialties": [],
+                      "nrOfSpecialties": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {
+              "description": "UI displays 'none' when nrOfSpecialties equals 0"
+            }
+          ],
+          "linkedId": "veterinarian-directory-display"
+        }
+      ],
+      "actors": [
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        },
+        {
+          "name": "Clinic Staff",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Veterinarian"]
+    },
+    {
+      "id": "system-veterinarian-data-loading",
+      "status": "Created",
+      "index": 2,
+      "title": "Load Veterinarian Reference Data",
+      "context": "Background loading of veterinarian information and specialties at system startup",
+      "sliceType": "AUTOMATION",
+      "commands": [
+        {
+          "id": "load-veterinarian-data-command",
+          "title": "Load Veterinarian Data",
+          "type": "COMMAND",
+          "description": "org.springframework.samples.petclinic.vet.VetRepository.findAll()",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "system-startup-processor",
+              "type": "INBOUND",
+              "title": "System Startup Processor",
+              "elementType": "AUTOMATION"
+            },
+            {
+              "id": "veterinarians-loaded-event",
+              "type": "OUTBOUND",
+              "title": "Veterinarians Loaded",
+              "elementType": "EVENT"
+            }
+          ],
+          "aggregate": "Veterinarian"
+        }
+      ],
+      "events": [
+        {
+          "id": "veterinarians-loaded-event",
+          "title": "Veterinarians Loaded",
+          "type": "EVENT",
+          "description": "org.springframework.samples.petclinic.vet.Vets",
+          "fields": [
+            {
+              "name": "veterinarians",
+              "type": "Custom",
+              "cardinality": "List",
+              "example": [
+                {
+                  "id": 1,
+                  "firstName": "James",
+                  "lastName": "Carter",
+                  "specialties": []
+                },
+                {
+                  "id": 2,
+                  "firstName": "Helen",
+                  "lastName": "Leary",
+                  "specialties": [
+                    {
+                      "id": 1,
+                      "name": "radiology"
+                    }
+                  ]
+                },
+                {
+                  "id": 3,
+                  "firstName": "Linda",
+                  "lastName": "Douglas",
+                  "specialties": [
+                    {
+                      "id": 2,
+                      "name": "surgery"
+                    },
+                    {
+                      "id": 3,
+                      "name": "dentistry"
+                    }
+                  ]
+                },
+                {
+                  "id": 4,
+                  "firstName": "Rafael",
+                  "lastName": "Ortega",
+                  "specialties": [
+                    {
+                      "id": 2,
+                      "name": "surgery"
+                    }
+                  ]
+                },
+                {
+                  "id": 5,
+                  "firstName": "Henry",
+                  "lastName": "Stevens",
+                  "specialties": [
+                    {
+                      "id": 1,
+                      "name": "radiology"
+                    }
+                  ]
+                },
+                {
+                  "id": 6,
+                  "firstName": "Sharon",
+                  "lastName": "Jenkins",
+                  "specialties": []
+                }
+              ],
+              "optional": false,
+              "subfields": [
+                {
+                  "name": "id",
+                  "type": "Int",
+                  "example": "1",
+                  "optional": false,
+                  "idAttribute": true,
+                  "generated": true
+                },
+                {
+                  "name": "firstName",
+                  "type": "String",
+                  "example": "James",
+                  "optional": false
+                },
+                {
+                  "name": "lastName",
+                  "type": "String",
+                  "example": "Carter",
+                  "optional": false
+                },
+                {
+                  "name": "specialties",
+                  "type": "Custom",
+                  "cardinality": "List",
+                  "example": [
+                    {
+                      "id": 1,
+                      "name": "radiology"
+                    }
+                  ],
+                  "optional": false,
+                  "subfields": [
+                    {
+                      "name": "id",
+                      "type": "Int",
+                      "example": "1",
+                      "optional": false,
+                      "idAttribute": true
+                    },
+                    {
+                      "name": "name",
+                      "type": "String",
+                      "example": "radiology",
+                      "optional": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "id": "load-veterinarian-data-command",
+              "type": "INBOUND",
+              "title": "Load Veterinarian Data",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "Veterinarian"
+        }
+      ],
+      "readmodels": [],
+      "screens": [],
+      "screenImages": [],
+      "processors": [
+        {
+          "id": "system-startup-processor",
+          "title": "System Startup Processor",
+          "type": "AUTOMATION",
+          "description": "Spring Boot application initialization",
+          "fields": [],
+          "dependencies": [
+            {
+              "id": "load-veterinarian-data-command",
+              "type": "OUTBOUND",
+              "title": "Load Veterinarian Data",
+              "elementType": "COMMAND"
+            }
+          ],
+          "aggregate": "System"
+        }
+      ],
+      "tables": [],
+      "specifications": [
+        {
+          "id": "spec-load-vets-on-startup",
+          "title": "Load all veterinarians from database on system startup",
+          "vertical": false,
+          "sliceName": "Load Veterinarian Reference Data",
+          "given": [],
+          "when": [
+            {
+              "id": "when-load-vet-data",
+              "title": "Load Veterinarian Data",
+              "type": "SPEC_COMMAND",
+              "index": 1,
+              "specRow": 1,
+              "linkedId": "load-veterinarian-data-command",
+              "fields": [],
+              "examples": [{}]
+            }
+          ],
+          "then": [
+            {
+              "id": "then-vets-loaded",
+              "title": "Veterinarians Loaded",
+              "type": "SPEC_EVENT",
+              "index": 1,
+              "specRow": 1,
+              "linkedId": "veterinarians-loaded-event",
+              "fields": [
+                {
+                  "name": "veterinarians",
+                  "type": "Custom",
+                  "cardinality": "List",
+                  "example": [
+                    {
+                      "id": 1,
+                      "firstName": "James",
+                      "lastName": "Carter",
+                      "specialties": []
+                    },
+                    {
+                      "id": 2,
+                      "firstName": "Helen",
+                      "lastName": "Leary",
+                      "specialties": [
+                        {
+                          "id": 1,
+                          "name": "radiology"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "examples": [
+                {
+                  "veterinarians": [
+                    {
+                      "id": 1,
+                      "firstName": "James",
+                      "lastName": "Carter",
+                      "specialties": []
+                    },
+                    {
+                      "id": 2,
+                      "firstName": "Helen",
+                      "lastName": "Leary",
+                      "specialties": [
+                        {
+                          "id": 1,
+                          "name": "radiology"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "comments": [
+            {
+              "description": "Veterinarian data is eagerly loaded with specialties using JPA @ManyToMany with FetchType.EAGER"
+            }
+          ],
+          "linkedId": "system-veterinarian-data-loading"
+        }
+      ],
+      "actors": [
+        {
+          "name": "System",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Veterinarian", "System"]
+    }
+  ]
+}
