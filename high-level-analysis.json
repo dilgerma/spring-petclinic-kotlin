@@ -1,0 +1,668 @@
+{
+  "slices": [
+    {
+      "id": "slice-001",
+      "status": "Created",
+      "index": 1,
+      "title": "Register New Owner",
+      "context": "User registers a new pet owner in the system",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "cmd-001",
+          "title": "Register Owner",
+          "fields": [],
+          "type": "COMMAND",
+          "description": "org.springframework.samples.petclinic.owner.OwnerController.processCreationForm",
+          "aggregate": "Owner",
+          "dependencies": [
+            {
+              "id": "evt-001",
+              "type": "OUTBOUND",
+              "title": "Owner Registered",
+              "elementType": "EVENT"
+            }
+          ]
+        }
+      ],
+      "events": [
+        {
+          "id": "evt-001",
+          "title": "Owner Registered",
+          "fields": [],
+          "type": "EVENT",
+          "description": "org.springframework.samples.petclinic.owner.OwnerRepository.save",
+          "aggregate": "Owner",
+          "dependencies": [
+            {
+              "id": "cmd-001",
+              "type": "INBOUND",
+              "title": "Register Owner",
+              "elementType": "COMMAND"
+            }
+          ]
+        }
+      ],
+      "readmodels": [],
+      "screens": [
+        {
+          "id": "scr-001",
+          "title": "Owner Registration Form",
+          "fields": [],
+          "type": "SCREEN",
+          "description": "owners/createOrUpdateOwnerForm.html",
+          "aggregate": "Owner",
+          "dependencies": [
+            {
+              "id": "cmd-001",
+              "type": "OUTBOUND",
+              "title": "Register Owner",
+              "elementType": "COMMAND"
+            }
+          ]
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Clinic Staff",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "slice-002",
+      "status": "Created",
+      "index": 2,
+      "title": "View Owner Details",
+      "context": "Display owner information with their pets and visit history",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "rm-001",
+          "title": "Owner Details",
+          "fields": [],
+          "type": "READMODEL",
+          "description": "org.springframework.samples.petclinic.owner.OwnerRepository.findById",
+          "aggregate": "Owner",
+          "dependencies": [
+            {
+              "id": "evt-001",
+              "type": "INBOUND",
+              "title": "Owner Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "scr-002",
+              "type": "OUTBOUND",
+              "title": "Owner Details Screen",
+              "elementType": "SCREEN"
+            }
+          ]
+        }
+      ],
+      "screens": [
+        {
+          "id": "scr-002",
+          "title": "Owner Details Screen",
+          "fields": [],
+          "type": "SCREEN",
+          "description": "owners/ownerDetails.html",
+          "aggregate": "Owner",
+          "dependencies": [
+            {
+              "id": "rm-001",
+              "type": "INBOUND",
+              "title": "Owner Details",
+              "elementType": "READMODEL"
+            }
+          ]
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Clinic Staff",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "slice-003",
+      "status": "Created",
+      "index": 3,
+      "title": "Search Owners",
+      "context": "Search for owners by last name",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "rm-002",
+          "title": "Owner Search Results",
+          "fields": [],
+          "type": "READMODEL",
+          "description": "org.springframework.samples.petclinic.owner.OwnerRepository.findByLastName",
+          "aggregate": "Owner",
+          "dependencies": [
+            {
+              "id": "evt-001",
+              "type": "INBOUND",
+              "title": "Owner Registered",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "scr-004",
+              "type": "OUTBOUND",
+              "title": "Owner Search Results Screen",
+              "elementType": "SCREEN"
+            }
+          ]
+        }
+      ],
+      "screens": [
+        {
+          "id": "scr-003",
+          "title": "Owner Search Form",
+          "fields": [],
+          "type": "SCREEN",
+          "description": "owners/findOwners.html",
+          "aggregate": "Owner",
+          "dependencies": []
+        },
+        {
+          "id": "scr-004",
+          "title": "Owner Search Results Screen",
+          "fields": [],
+          "type": "SCREEN",
+          "description": "owners/ownersList.html",
+          "aggregate": "Owner",
+          "dependencies": [
+            {
+              "id": "rm-002",
+              "type": "INBOUND",
+              "title": "Owner Search Results",
+              "elementType": "READMODEL"
+            }
+          ]
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Clinic Staff",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "slice-004",
+      "status": "Created",
+      "index": 4,
+      "title": "Update Owner Information",
+      "context": "Modify existing owner details",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "cmd-002",
+          "title": "Update Owner",
+          "fields": [],
+          "type": "COMMAND",
+          "description": "org.springframework.samples.petclinic.owner.OwnerController.processUpdateOwnerForm",
+          "aggregate": "Owner",
+          "dependencies": [
+            {
+              "id": "scr-005",
+              "type": "INBOUND",
+              "title": "Owner Edit Form",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "evt-002",
+              "type": "OUTBOUND",
+              "title": "Owner Updated",
+              "elementType": "EVENT"
+            }
+          ]
+        }
+      ],
+      "events": [
+        {
+          "id": "evt-002",
+          "title": "Owner Updated",
+          "fields": [],
+          "type": "EVENT",
+          "description": "org.springframework.samples.petclinic.owner.OwnerRepository.save",
+          "aggregate": "Owner",
+          "dependencies": [
+            {
+              "id": "cmd-002",
+              "type": "INBOUND",
+              "title": "Update Owner",
+              "elementType": "COMMAND"
+            }
+          ]
+        }
+      ],
+      "readmodels": [],
+      "screens": [
+        {
+          "id": "scr-005",
+          "title": "Owner Edit Form",
+          "fields": [],
+          "type": "SCREEN",
+          "description": "owners/createOrUpdateOwnerForm.html",
+          "aggregate": "Owner",
+          "dependencies": [
+            {
+              "id": "rm-001",
+              "type": "INBOUND",
+              "title": "Owner Details",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "cmd-002",
+              "type": "OUTBOUND",
+              "title": "Update Owner",
+              "elementType": "COMMAND"
+            }
+          ]
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Clinic Staff",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Owner"]
+    },
+    {
+      "id": "slice-005",
+      "status": "Created",
+      "index": 5,
+      "title": "Add New Pet to Owner",
+      "context": "Register a new pet for an existing owner",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "cmd-003",
+          "title": "Add Pet",
+          "fields": [],
+          "type": "COMMAND",
+          "description": "org.springframework.samples.petclinic.owner.PetController.processCreationForm",
+          "aggregate": "Pet",
+          "aggregateDependencies": ["Owner"],
+          "dependencies": [
+            {
+              "id": "scr-006",
+              "type": "INBOUND",
+              "title": "Pet Registration Form",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "evt-003",
+              "type": "OUTBOUND",
+              "title": "Pet Added",
+              "elementType": "EVENT"
+            }
+          ]
+        }
+      ],
+      "events": [
+        {
+          "id": "evt-003",
+          "title": "Pet Added",
+          "fields": [],
+          "type": "EVENT",
+          "description": "org.springframework.samples.petclinic.owner.PetRepository.save, Owner.addPet",
+          "aggregate": "Pet",
+          "aggregateDependencies": ["Owner"],
+          "dependencies": [
+            {
+              "id": "cmd-003",
+              "type": "INBOUND",
+              "title": "Add Pet",
+              "elementType": "COMMAND"
+            }
+          ]
+        }
+      ],
+      "readmodels": [],
+      "screens": [
+        {
+          "id": "scr-006",
+          "title": "Pet Registration Form",
+          "fields": [],
+          "type": "SCREEN",
+          "description": "pets/createOrUpdatePetForm.html",
+          "aggregate": "Pet",
+          "dependencies": [
+            {
+              "id": "rm-001",
+              "type": "INBOUND",
+              "title": "Owner Details",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "cmd-003",
+              "type": "OUTBOUND",
+              "title": "Add Pet",
+              "elementType": "COMMAND"
+            }
+          ]
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Clinic Staff",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet", "Owner"]
+    },
+    {
+      "id": "slice-006",
+      "status": "Created",
+      "index": 6,
+      "title": "Update Pet Information",
+      "context": "Modify existing pet details",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "cmd-004",
+          "title": "Update Pet",
+          "fields": [],
+          "type": "COMMAND",
+          "description": "org.springframework.samples.petclinic.owner.PetController.processUpdateForm",
+          "aggregate": "Pet",
+          "dependencies": [
+            {
+              "id": "scr-007",
+              "type": "INBOUND",
+              "title": "Pet Edit Form",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "evt-004",
+              "type": "OUTBOUND",
+              "title": "Pet Updated",
+              "elementType": "EVENT"
+            }
+          ]
+        }
+      ],
+      "events": [
+        {
+          "id": "evt-004",
+          "title": "Pet Updated",
+          "fields": [],
+          "type": "EVENT",
+          "description": "org.springframework.samples.petclinic.owner.PetRepository.save",
+          "aggregate": "Pet",
+          "dependencies": [
+            {
+              "id": "cmd-004",
+              "type": "INBOUND",
+              "title": "Update Pet",
+              "elementType": "COMMAND"
+            }
+          ]
+        }
+      ],
+      "readmodels": [],
+      "screens": [
+        {
+          "id": "scr-007",
+          "title": "Pet Edit Form",
+          "fields": [],
+          "type": "SCREEN",
+          "description": "pets/createOrUpdatePetForm.html",
+          "aggregate": "Pet",
+          "dependencies": [
+            {
+              "id": "rm-001",
+              "type": "INBOUND",
+              "title": "Owner Details",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "cmd-004",
+              "type": "OUTBOUND",
+              "title": "Update Pet",
+              "elementType": "COMMAND"
+            }
+          ]
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Clinic Staff",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Pet"]
+    },
+    {
+      "id": "slice-007",
+      "status": "Created",
+      "index": 7,
+      "title": "Schedule Pet Visit",
+      "context": "Schedule a new veterinary visit for a pet",
+      "sliceType": "STATE_CHANGE",
+      "commands": [
+        {
+          "id": "cmd-005",
+          "title": "Schedule Visit",
+          "fields": [],
+          "type": "COMMAND",
+          "description": "org.springframework.samples.petclinic.owner.VisitController.processNewVisitForm",
+          "aggregate": "Visit",
+          "aggregateDependencies": ["Pet"],
+          "dependencies": [
+            {
+              "id": "scr-008",
+              "type": "INBOUND",
+              "title": "Visit Scheduling Form",
+              "elementType": "SCREEN"
+            },
+            {
+              "id": "evt-005",
+              "type": "OUTBOUND",
+              "title": "Visit Scheduled",
+              "elementType": "EVENT"
+            }
+          ]
+        }
+      ],
+      "events": [
+        {
+          "id": "evt-005",
+          "title": "Visit Scheduled",
+          "fields": [],
+          "type": "EVENT",
+          "description": "org.springframework.samples.petclinic.visit.VisitRepository.save",
+          "aggregate": "Visit",
+          "aggregateDependencies": ["Pet"],
+          "dependencies": [
+            {
+              "id": "cmd-005",
+              "type": "INBOUND",
+              "title": "Schedule Visit",
+              "elementType": "COMMAND"
+            }
+          ]
+        }
+      ],
+      "readmodels": [],
+      "screens": [
+        {
+          "id": "scr-008",
+          "title": "Visit Scheduling Form",
+          "fields": [],
+          "type": "SCREEN",
+          "description": "pets/createOrUpdateVisitForm.html",
+          "aggregate": "Visit",
+          "dependencies": [
+            {
+              "id": "rm-001",
+              "type": "INBOUND",
+              "title": "Owner Details",
+              "elementType": "READMODEL"
+            },
+            {
+              "id": "cmd-005",
+              "type": "OUTBOUND",
+              "title": "Schedule Visit",
+              "elementType": "COMMAND"
+            }
+          ]
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Clinic Staff",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Visit", "Pet"]
+    },
+    {
+      "id": "slice-008",
+      "status": "Created",
+      "index": 8,
+      "title": "View Visit History",
+      "context": "Display visit history for a pet on owner details page",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "rm-003",
+          "title": "Pet Visit History",
+          "fields": [],
+          "type": "READMODEL",
+          "description": "org.springframework.samples.petclinic.visit.VisitRepository.findByPetId",
+          "aggregate": "Visit",
+          "dependencies": [
+            {
+              "id": "evt-005",
+              "type": "INBOUND",
+              "title": "Visit Scheduled",
+              "elementType": "EVENT"
+            },
+            {
+              "id": "scr-002",
+              "type": "OUTBOUND",
+              "title": "Owner Details Screen",
+              "elementType": "SCREEN"
+            }
+          ]
+        }
+      ],
+      "screens": [],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Clinic Staff",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Visit"]
+    },
+    {
+      "id": "slice-009",
+      "status": "Created",
+      "index": 9,
+      "title": "Browse Veterinarians",
+      "context": "View list of all veterinarians and their specialties",
+      "sliceType": "STATE_VIEW",
+      "commands": [],
+      "events": [],
+      "readmodels": [
+        {
+          "id": "rm-004",
+          "title": "Veterinarian List",
+          "fields": [],
+          "type": "READMODEL",
+          "description": "org.springframework.samples.petclinic.vet.VetRepository.findAll",
+          "aggregate": "Vet",
+          "dependencies": [
+            {
+              "id": "scr-009",
+              "type": "OUTBOUND",
+              "title": "Veterinarian List Screen",
+              "elementType": "SCREEN"
+            }
+          ]
+        }
+      ],
+      "screens": [
+        {
+          "id": "scr-009",
+          "title": "Veterinarian List Screen",
+          "fields": [],
+          "type": "SCREEN",
+          "description": "vets/vetList.html",
+          "aggregate": "Vet",
+          "dependencies": [
+            {
+              "id": "rm-004",
+              "type": "INBOUND",
+              "title": "Veterinarian List",
+              "elementType": "READMODEL"
+            }
+          ]
+        }
+      ],
+      "screenImages": [],
+      "processors": [],
+      "tables": [],
+      "specifications": [],
+      "actors": [
+        {
+          "name": "Clinic Staff",
+          "authzRequired": false
+        },
+        {
+          "name": "Pet Owner",
+          "authzRequired": false
+        }
+      ],
+      "aggregates": ["Vet"]
+    }
+  ]
+}
